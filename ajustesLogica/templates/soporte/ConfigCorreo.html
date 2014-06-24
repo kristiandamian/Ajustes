@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block content %}
+        <div class="panel panel-default">
+        <div class="panel panel-heading">Configuracion de correos</div>
+        <div class="panel-body">            
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label for="cmbRegion">Regiones</label>
+                        <select id="cmbRegion" name="cmbRegion" class="form-control">
+                            {%for r in regiones%}
+                                <option value="{{r.id}}">{{r.NombreRegion}}</option>
+                            {%endfor%}
+                        </select>
+                    </div>                    
+                    <div class="col-sm-3">
+                        <label for="txtUsuario">Usuario</label>
+                        <input type="text" name="txtUsuario" class="form-control obligatorio" id="txtUsuario" placeholder="Correo electronico" maxlength="5"/>
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="txtPassword">Password</label>
+                        <input type="password" name="txtPassword" class="form-control obligatorio" id="txtPassword" placeholder="password" maxlength="500" />
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="txtPassword2">Repita Password</label>
+                        <input type="password" name="txtPassword2" class="form-control obligatorio" id="txtPassword2" placeholder="mismo password" maxlength="500"/>
+                    </div>                     
+                </div>
+                <button class="btn btn-primary" style="margin-top: 15px;" id="GuardarCorreo">Guardar </button>
+            </div>            
+        </div>
+    </div>
+    {% load staticfiles %} 
+    <script src="{% static "js/json2.min.js" %}"></script>
+
+    <script type="text/javascript">
+        $(function(){
+            $("li").removeClass("active");
+            $("#Soporte").addClass("active");
+                
+            $('#cmbRegion').on('change', function() {                
+                BuscoCorreo($(this).val());
+            });
+            $('#GuardarCorreo').on('click',function(){
+                    GrabarCorreo();
+            });
+            BuscoCorreo($('#cmbRegion').val());//BUSCO EL PRIMER CORREO
+        });
+         
+        BuscoCorreo=function(id){
+            var ajax = {
+                type: "POST",
+                async: true,
+                dataType: "JSON",
+                url: "/ajustes/ajax/BuscarCorreo/",
+                data: "region="+id,
+                error: function (xhr, status, error) {
+                    alert("Ocurrio un error: " + error + ":" + eval(xhr).responseText);
+                },
+                success: function (data) {                    
+                    d=eval(data);                    
+                    if (d.error) {                        
+                        alert(d.mensaje);                        
+                    }
+                    else
+                    {                        
+                        $("#txtUsuario").val(d.data);
+                    }
+                }
+            };
+            $.ajax(ajax);
+        };
+        GrabarCorreo=function(){
+            Datos={}
+            Datos.id=$('#cmbRegion').val();
+            Datos.usr=$("#txtUsuario").val();
+            Datos.psw=$("#txtPassword").val()
+            if (PasswordCorrecto()) {
+                var ajax = {
+                type: "POST",
+                async: true,
+                dataType: "JSON",
+                url: "/ajustes/ajax/GrabarCorreo/",
+                data: JSON.stringify(Datos),
+                error: function (xhr, status, error) {
+                    alert("Ocurrio un error: " + error + ":" + eval(xhr).responseText);
+                },
+                success: function (data) {                    
+                    d=eval(data);                    
+                    if (d.error) {                        
+                        alert(d.mensaje);                        
+                    }
+                    else
+                    {                        
+                        alert("Datos del correo actualizados con exito");
+                    }
+                }
+            };
+            $.ajax(ajax);
+            }
+            else{
+                alert("Los password no coinciden");
+            }
+        };
+        PasswordCorrecto=function(){
+            return  $("#txtPassword").val()== $("#txtPassword2").val();
+        };
+    </script>
+{% endblock %}

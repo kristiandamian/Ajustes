@@ -1,0 +1,69 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Ajustes a ctes</title>
+    <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
+</head>
+<script src="{% static "js/jquery-1.7.1.min.js" %}"></script>
+<script src="{% static "js/bootstrap.min.js" %}"></script>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/ajustes/">Ajustes a ctes</a>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li id="Ajustes" class="dropdown">
+                <a href="#" data-toggle="dropdown" class="dropdown-toggle">Ajustes<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/ajustes/AltaAjuste">Registro de ajustes</a></li>
+                        <li><a href="/ajustes/EvidenciaAjustes">Anexar evidencia a ajustes</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/ajustes/AutorizarAjustes">Autorizar ajustes</a></li>
+                    </ul>
+                </a>
+            </li>            
+            <li id="Soporte" class="dropdown">
+                <a href="#" data-toggle="dropdown" class="dropdown-toggle">Soporte<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/ajustes/ConfiguracionCorreo">Configuracion del correo</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/ajustes/CancelarAjustes">Cancelar ajuste</a></li>                        
+                    </ul>
+                </a>
+            </li>
+            <li id="Reportes" class="dropdown">
+                <a href="#" data-toggle="dropdown" class="dropdown-toggle">Reportes<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="/ajustes/Diferencias">Ajustes por fecha</a></li>
+                    <li class="divider"></li>
+                    <li><a href="/ajustes/DiferenciasPorRegion">Ajustes por zona</a></li>
+                    <li><a href="/ajustes/DiferenciasPorMesRegion">Detalle por Mes</a></li>                    
+                    <li class="divider"></li>
+                    <li><a href="/ajustes/GraficaTendenciasAjustes">Tendencias de ajustes</a></li>
+                    <li class="divider"></li>
+                    <li><a href="/ajustes/ConciliacionPorTipoRegional">Ajustes por tipo</a></li>
+                </ul>
+            </li>
+            <li id="Admin""><a href="/ajustes/admin">Admin</a></li>
+            <li id="Salir"><a href="/ajustes/logout">Salir</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <br/>
+    <br/>
+    <br/>
+    <div class="container">
+        {% block content %}
+        {% endblock content %}
+    </div>
+</body>
+</html>

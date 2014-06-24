@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+    <div style="margin-left: 250px; padding-top: 100px;">
+            {% load staticfiles %}    
+            <img src="{% static "img/coppelcandado.jpg" %}"/>
+    </div>
+    <div style="padding-top: 50px;">
+{% if messages %}
+        <h1>Error</h1>   
+        <ul class="messages">
+            {% for message in messages %}
+            <h4>{{ message }}</h4>
+            {% endfor %}
+        </ul>
+{%else%}
+    <h1>Error 404</h1>    
+    <h3>P&aacute;gina no existe</h3>
+    <h4>Si desea ingresar a la opci&oacute;n debe solitar permiso a centralizaci&oacute;n Culiac&aacute;n</h4><h5>Ext. 560395</h5>
+    </div>
+{% endif %}
+{% endblock %}

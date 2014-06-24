@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+    {% load staticfiles %}    
+    <link href="{% static "css/form.css" %}" rel="stylesheet">
+    <link href="{% static "css/dark-hive/jquery-ui-1.10.4.custom.min.css" %}" rel="stylesheet">
+    
+    <form method="post" action="/ajustes/RegistrarAjuste/">
+        {% csrf_token %}
+        {{ forma.as_p }}
+        {%if error %}
+            <script type="text/javascript">
+               alert("Falta registrar datos obligatorios");
+            </script>
+        {% endif %}
+    <br/>
+    <input id="btnGrabar" type="submit" value="Grabar" class="btn btn-default"/>
+    </form>
+    
+    <script type="text/javascript" src="{% static "js/jquery-ui-1.10.4.custom.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/datepickerUtil.js" %}"></script>
+
+    <script type="text/javascript">
+        $(function() {
+            $("li").removeClass("active");
+            $("#Ajustes").addClass("active");
+                
+            dtpConfig();
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="panel panel-default">
+        <div class="panel panel-heading">Ajustes sin autorizar</div>
+        <div class="panel-body">            
+            <div class="container">
+                <table id="ajusteSeleccionado" class="table table-striped table-hover" style="width:95%;">
+                    <thead>
+                    <tr  class="success header">
+                        <td style="display: none">id</td>
+                        <td>NumCte</td>
+                        <td>Tienda</td>
+                        <td>Fecha Recepcion</td>
+                        <td>Num. Empleado</td>
+                        <td>Num. Cuentas</td>
+                        <td>Monto</td>
+                        <td>Seleccionar</td>
+                    </tr>
+                    </thead>
+                    {%for a in ajustes %}
+                    <tr>                        
+                        <td style="display: none">
+                            {{a.id}}
+                        </td>
+                        <td>
+                            {{a.NumCte}}
+                        </td>
+                        <td>
+                            {{a.Tienda}}
+                        </td>
+                        <td>
+                            {{a.FechaRecepcion|date:"SHORT_DATE_FORMAT"}}
+                        </td>
+                        <td>
+                            {{a.NumEmpleado}}
+                        </td>
+                        <td>
+                            {{a.NumCuentas}}
+                        </td>
+                        <td>
+                            {{a.Monto}}
+                        </td>
+                        <td>
+                            <input type="checkbox">
+                        </td>
+                    </tr>
+                    {%endfor%}
+                </table>
+            </div>
+        </div>
+    </div>
+    <button class="btn btn-primary" id="autorizar">
+        Autorizar
+    </button>
+    {%if error%}
+    <script type="text/javascript">
+         $(function(){
+            $("li").removeClass("active");
+            $("#Ajustes").addClass("active");
+                
+            alert("{{mensaje}}");
+            $("#autorizar").attr("disabled","disabled")
+         });
+    </script>
+    {%else%}
+        {% load staticfiles %} 
+        <script src="{% static "js/json2.min.js" %}"></script>
+        <script type="text/javascript">
+             $(function(){
+                $("li").removeClass("active");
+                $("#Ajustes").addClass("active");
+                
+                $("#autorizar").on("click", Grabar);
+             });
+             
+             
+            Grabar=function () {
+                    if (HaySeleccionado("ajusteSeleccionado")) {
+                        GrabarAjax("ajusteSeleccionado");
+                    }
+                    else{
+                        alert("Debe seleccionar al menos un ajuste");                    
+                    }
+            };
+            
+            HaySeleccionado= function(id) {
+                return $("#"+id+" tr input:checked").length>0;
+            };
+            
+            ObtengoSeleccionados=function(table) {
+                var seleccionados=[];
+                $("#"+table+" tr").each(function(){                    
+                    if($(this).find("input").is(":checked")){                        
+                        seleccionados.push(parseInt($(this).find("td:eq(0)").html()));//Obtengo el ID
+                    }
+                });                
+                return seleccionados;
+            };
+            
+            GrabarAjax=function(table) {
+                var ajustesSeleccionados={};                
+                ajustesSeleccionados.ids=ObtengoSeleccionados(table);
+                
+                var ajax = {
+                    type: "POST",
+                    async: true,
+                    dataType: "JSON",
+                    url: "/ajustes/ajax/RegistroAutorizacion/",
+                    data:  JSON.stringify(ajustesSeleccionados),
+                    error: function (xhr, status, error) {
+                        alert("Ocurrio un error: " + error + ":" + eval(xhr).responseText);
+                    },
+                    success: function (data) {
+                        d=eval(data);
+                        if (d.error) {
+                            alert(d.mensaje)
+                        }
+                        else
+                        {
+                            $("#"+table+" tr input:checked").each(function(){
+                                $(this).parent().parent().remove();
+                            });
+                            alert("ajustes autorizados con exito, se envio el correo correspondiente al area de carteras");
+                        }
+                    }
+                };
+                $.ajax(ajax);
+            };
+        </script>        
+    {%endif%}                            
+
+{% endblock %}

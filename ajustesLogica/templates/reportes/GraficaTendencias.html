@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block content %}
+    {% load staticfiles %}
+    <link href="{% static "css/dark-hive/jquery-ui-1.10.4.custom.min.css" %}" rel="stylesheet">
+
+    <h3>Grafica de tendencia de ajustes</h3>
+    <div>
+        <form  method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-2">
+                            <label for="txtTienda">Tienda</label>
+                            <input type="text" name="txtTienda" class="form-control" id="txtTienda" placeholder="Numero de tienda" maxlength="5" value="{{Tienda}}" />
+                    </div>                        
+                    <div class="col-sm-2">
+                        <label for="cmbRegion">Regiones</label>
+                        <select id="cmbRegion" name="cmbRegion" class="form-control">
+                            {%for r in regiones%}
+                                <option value="{{r.id}}"
+                                        {%if r.id == Region%}
+                                            selected
+                                        {%endif%}
+                                 >{{r.NombreRegion}}</option>
+                            {%endfor%}
+                        </select>
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="fechaInicial">Fecha Inicial</label>
+                        <input type="text" name="fechaInicial" class="form-control datepicker obligatorio" id="fechaInicial"
+                               placeholder="dd/mm/yyyy" maxlength="10" value="{{FechaInicial|date:"SHORT_DATE_FORMAT"}}" />
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="fechaFinal">Fecha Final</label>
+                        <input type="text" name="fechaFinal" class="form-control datepicker obligatorio" id="fechaFinal"
+                               placeholder="dd/mm/yyyy" maxlength="10" value="{{FechaFinal|date:"SHORT_DATE_FORMAT"}}" />
+                    </div>                    
+                </div>
+                <input id="btnBuscar" type="submit" value="Buscar" class="btn btn-primary" style="margin-top:15px;"/>
+            </div>
+        </form>
+        
+        <div id="chart1" style=" position: relative;" class="jqplot-target">
+        </div>
+    </div>
+        
+    <script type="text/javascript" src="{% static "js/jqplot/jquery.jqplot.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jqplot/jqplot.barRenderer.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jqplot/jqplot.categoryAxisRenderer.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jqplot/jqplot.pointLabels.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jqplot/jqplot.dateAxisRenderer.min.js"%}"></script>
+    <script type="text/javascript" src="{% static "js/jquery-ui-1.10.4.custom.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/datepickerUtil.js" %}"></script>
+
+    <script type="text/javascript">
+        $(function(){
+           $("li").removeClass("active");
+           $("#Reportes").addClass("active");
+
+            dtpConfig();
+            {% if Error %}
+               alert("{{MensajeError}}");
+            {% else %}
+                {% ifequal Datos|length  0 %}
+                    {% if Generar%}
+                        alert("No existen datos para los filtros seleccionados");
+                    {%endif%}
+                {% else %}
+                    {% if Generar%}
+                        GeneroGrafica();
+                    {%endif%}
+               {% endifequal %}
+            {% endif %}
+       });
+        
+        function GeneroGrafica(){
+            dias=7;
+            {% if DiasEntreFechas %}                
+                dias=1;
+            {% endif %}
+            var line1 =  [
+                            {%for d in Datos%}
+                                ['{{d.0|date:"Y-m-d"}}',{{d.1}}],
+                            {%endfor%}
+                          ];
+  
+            var plot1 = $.jqplot('chart1', [line1], {
+                title:'Tendencia de ajustes',
+                axes:{
+                    xaxis:{
+                        renderer:$.jqplot.DateAxisRenderer, 
+                        tickOptions:{formatString:'%#d %b  %y'},
+                        
+                        tickInterval:dias+' day'//'1 month'
+                        }
+                    },
+                series:[{lineWidth:4, }]
+            });
+      }
+    </script>    
+{% endblock %}
+
+<!--http://www.jqplot.com/tests/point-labels.php-->

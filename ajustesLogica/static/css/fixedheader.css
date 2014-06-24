@@ -1,0 +1,9 @@
+thead{
+    display:block;
+    margin:0px;
+    cell-spacing:0px;
+    left:0px
+}
+tbody{
+    display:block;
+}
