@@ -7,25 +7,20 @@ from ajustesLogica.models import RegionAuditoria, Ajuste
 from ajustesLogica.Config import Configuracion
 
 @login_required(login_url=Configuracion.LOGIN_URL)
-def TendenciasAjustes(request):
-    template = loader.get_template('reportes/GraficaTendencias.html')
+def AjustesPorFecha(request):
+    template = loader.get_template('reportes/AjustesPorFecha.html')
     regiones=RegionAuditoria.objects.PorPermiso(request.user).order_by("NombreRegion")
     
-    resultados=[]
-    generar=False
     region=-1
     tda=""
     fechainicial=""
     fechafinal=""
     error=False
     msg=""
-    daysDiff=Configuracion.DAYS_DIFF
-    
+    datos=None
     if request.method == 'POST':
-        generar=True
         tda=request.POST["txtTienda"]
-        region=request.POST["cmbRegion"]
-        datos=None
+        region=request.POST["cmbRegion"]        
         try:
             fechainicial=request.POST["fechaInicial"]
             fechainicial=datetime.strptime(fechainicial,"%d/%m/%Y")
@@ -48,29 +43,22 @@ def TendenciasAjustes(request):
             error=True
             msg ="La fecha final debe ser mayor a la fecha inicial"
         if not error:
-            daysDiff = fechafinal-fechainicial
-            daysDiff = daysDiff.days
-            if int(region)>0:
-                if tda>0:
-                    datos=Ajuste.objects.filter(Tienda=tda, Region__id=region, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion").values('FechaRecepcion').annotate(Cargo=Sum('Monto'))
-                else:
-                    datos=Ajuste.objects.filter(Region__id=region, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion").values('FechaRecepcion').annotate(Cargo=Sum('Monto'))
+            if tda>0:
+                datos=Ajuste.objects.filter(Tienda=tda, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion","Tienda")
             else:
-                error=True
-                msg="Debe seleccionar una region"
-            for d in datos:
-                resultados.append((d['FechaRecepcion'],d['Cargo']))
+                if int(region)>0:
+                        datos=Ajuste.objects.filter(Region__id=region, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion","Tienda")
+                else:
+                    datos=Ajuste.objects.filter(FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion","Tienda")
                 
     context=RequestContext(request, {
                 'regiones':regiones,
-                'Datos':resultados,
-                'Generar':generar,        
+                'Datos':datos,
                 'FechaInicial':fechainicial,
                 'FechaFinal':fechafinal,
                 'Tienda':tda,
-                'DiasEntreFechas':daysDiff<Configuracion.MAX_DAYS_DIFF,
                 'Error':error,
                 'MensajeError':msg,
                 'Region':int(region),
         })
-    return HttpResponse(template.render(context))   
+    return HttpResponse(template.render(context)) 

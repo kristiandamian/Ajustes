@@ -13,7 +13,9 @@ from ajustesLogica.views.ajax.Evidencias import BuscarAjustes, BuscarAjuste, upl
 from ajustesLogica.views.ajax.Autorizaciones import RegistroAutorizacion
 from ajustesLogica.views.ajax.Correos import BuscarCorreo, GrabarCorreo
 from ajustesLogica.views.ajax.Cancelaciones import CanceloAjuste
-from ajustesLogica.views.reportes.ControllerGraficaTendencias import TendenciasAjustes
+from ajustesLogica.views.reportes.controllerGraficaTendencias import TendenciasAjustes
+from ajustesLogica.views.reportes.controllerAjustesPorFecha import AjustesPorFecha
+from ajustesLogica.views.reportes.controllerAjustePorTipo import AjustePorTipoZona, AjustePorTipoRegion
 from ajustesLogica.models import UsuarioAcceso, RegionAuditoria, ZonaAuditoria, CorreoEnviado
 from ajustesLogica.models import UsuarioAccesoAdmin
 
@@ -66,6 +68,9 @@ urlpatterns = patterns('',
 ####    REPORTES                                                                                        ####
 ############################################################################################################   
     url(r'^ajustes/GraficaTendenciasAjustes/$',TendenciasAjustes),
+    url(r'^ajustes/AjustesPorFecha/$',AjustesPorFecha),
+    url(r'^ajustes/AjustePorTipoZona/$',AjustePorTipoZona),
+    url(r'^ajustes/AjustePorTipoRegion/(?P<zona_id>\d+)/$',AjustePorTipoRegion),    
 ############################################################################################################
 ####  LIGA PARA LOS ARCHIVOS SUBIDOS (EVIDENCIAS)                                                      ####
 ############################################################################################################    

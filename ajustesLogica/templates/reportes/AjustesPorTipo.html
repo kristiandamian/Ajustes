@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ Titulo }}</h1>
+
+<table class="table table-striped table-hover" id="TotalUnidades">
+        <tr class="success">
+            <td>{{Encabezado}}</td>
+                {% for t in Titulos%}
+                <td>{{t}}</td>
+                {% endfor %}
+        </tr>
+        
+{% for r in Datos %}        
+        <tr>
+                {% if URL %}
+                        <td><b><a href="{{URL}}{{ r.ID }}/">{{ r.Desc }}</a></b></td>
+                {%else%}
+                        <td><b>{{ r.Desc }}</b></td>
+                {%endif%}                
+                {% for t in r.Tipos%}                        
+                    <td >{{t.Total}}</td>
+                {% endfor %}
+        </tr>
+{% endfor %}
+<tr>
+    <td>Totales</td>    
+    {% for t in Totales%}
+        <td class="moneda">{{ t }}</td>    
+    {%endfor%}
+</tr>
+</table>
+
+{% load staticfiles %}    
+<script src="{% static "js/Utilerias.js" %}"></script>   
+
+<script type="text/javascript">
+ $(function(){
+        $("li").removeClass("active");
+        $("#Reportes").addClass("active");        
+    });
+</script>
+{% endblock %}

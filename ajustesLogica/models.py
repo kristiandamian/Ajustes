@@ -5,10 +5,26 @@ from django.forms import ModelForm, DateInput
 from django.contrib import admin
 from django.contrib.auth.models import User
 
+class ZonaAuditoriaManager(models.Manager):
+    def PorPermiso(self, user):
+        usuario=UsuarioAcceso.objects.filter(Usuario=user)
+        if usuario.__len__()==0 or  user.is_superuser or usuario[0].Region==None:#no hay un usuario o ese usuario es "superusuario" o tiene acceso a nivel nacional
+           return super(ZonaAuditoriaManager,self).get_query_set()
+        zonas=[]
+        for u in usuario:                          
+            if u.Zona!=None:
+                zonas+=ZonaAuditoria.objects.filter(id=u.Zona.id).values_list("id",flat=True)
+            else:
+                if u.Region!=None:                
+                    zonas+=RegionAuditoria.objects.filter(Zona__id=u.Zona.id).values_list("Zona__id",flat=True)            
+        return super(ZonaAuditoriaManager,self).get_query_set().filter(id__in = zonas)
+    
 class ZonaAuditoria(models.Model):
     NombreZona=models.CharField(max_length=1000)
     GerenteZona=models.CharField(max_length=1000)
     Correo=models.EmailField(max_length=100)
+    
+    objects=ZonaAuditoriaManager()
     
     def __unicode__(self):
         return self.NombreZona+"-"+self.GerenteZona
@@ -24,7 +40,7 @@ class RegionAuditoriaManager(models.Manager):
                 regiones+=RegionAuditoria.objects.filter(id=u.Region.id).values_list("id",flat=True)
             else:
                 if u.Zona!=None:                
-                    regiones+=RegionAuditoria.objects.filter(Zona__id=u.Zona__id).values_list("id",flat=True)            
+                    regiones+=RegionAuditoria.objects.filter(Zona__id=u.Zona.id).values_list("id",flat=True)            
         return super(RegionAuditoriaManager,self).get_query_set().filter(id__in = regiones)
     
 class RegionAuditoria(models.Model):
@@ -65,6 +81,7 @@ class Ajuste(models.Model):
     Monto=models.DecimalField(verbose_name='Monto del ajuste',default=0, max_digits=18,decimal_places=2)
     Activo=models.BooleanField(verbose_name='Procede ajuste', default=True)
     ProcedeAjuste=models.BooleanField(verbose_name='Procede ajuste', blank=True)
+    NoProcedeAjuste=models.BooleanField(verbose_name='Procede ajuste', blank=True)
     FechaRegistroSistema=models.DateTimeField(auto_now=True)
     Enviado=models.BooleanField(verbose_name='Enviado a cobranza ajuste', default=False)
     Usuario=models.ForeignKey(User)
@@ -85,7 +102,7 @@ class AjusteForm(ModelForm):
         widgets  = {
             'FechaRecepcion': DateInput(attrs={'class':'datepicker'}),
         }
-        exclude=('FechaRegistroSistema','Usuario','ProcedeAjuste','Activo','Enviado')
+        exclude=('FechaRegistroSistema','Usuario','ProcedeAjuste','NoProcedeAjuste','Activo','Enviado')
 
 class ImagenAjuste(models.Model):
     Imagen = models.CharField('Imagen',max_length=500)
