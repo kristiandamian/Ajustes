@@ -1,7 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
+{% load staticfiles %}    
+<link href="{% static "css/dark-hive/jquery-ui-1.10.4.custom.min.css" %}" rel="stylesheet">
 <h1>{{ Titulo }}</h1>
-
+    <div>
+        <form  method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <label for="fechaInicial">Fecha Inicial</label>
+                        <input type="text" name="fechaInicial" class="form-control datepicker obligatorio" id="fechaInicial"
+                               placeholder="dd/mm/yyyy" maxlength="10" value="{{FechaInicial|date:"SHORT_DATE_FORMAT"}}" />
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="fechaFinal">Fecha Final</label>
+                        <input type="text" name="fechaFinal" class="form-control datepicker obligatorio" id="fechaFinal"
+                               placeholder="dd/mm/yyyy" maxlength="10" value="{{FechaFinal|date:"SHORT_DATE_FORMAT"}}" />
+                    </div>                    
+                </div>
+                <input id="btnBuscar" type="submit" value="Buscar" class="btn btn-primary" style="margin-top:15px;margin-bottom: 15px;"/>
+            </div>
+        </form>        
+    </div>
 <table class="table table-striped table-hover" id="TotalUnidades">
         <tr class="success">
             <td>{{Encabezado}}</td>
@@ -30,13 +51,19 @@
 </tr>
 </table>
 
-{% load staticfiles %}    
+
 <script src="{% static "js/Utilerias.js" %}"></script>   
+<script type="text/javascript" src="{% static "js/jquery-ui-1.10.4.custom.min.js" %}"></script>
+<script type="text/javascript" src="{% static "js/datepickerUtil.js" %}"></script>
 
 <script type="text/javascript">
  $(function(){
         $("li").removeClass("active");
-        $("#Reportes").addClass("active");        
+        $("#Reportes").addClass("active");
+        dtpConfig();
+        {%if Error%}
+                alert("{{MensajeError}}");
+        {%endif%}
     });
 </script>
 {% endblock %}

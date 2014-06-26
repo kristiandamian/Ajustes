@@ -7,30 +7,30 @@
     <div class="panel panel-default">
         <div class="panel panel-heading">Anexar evidencia a ajustes de clientes</div>
         <div class="panel-body">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-2">
-                            <label for="txtTienda">Tienda</label>
-                            <input type="text" name="txtTienda" class="form-control obligatorio" id="txtTienda" placeholder="Numero de tienda" maxlength="5" value="{{Tienda}}" />
-                        </div>
-                        <div class="col-sm-2">
-                            <label for="txtNumCte">Num. Cte.</label>
-                            <input type="text" name="txtNumCte" class="form-control" id="txtNumCte" maxlength="10" value="{{numcte}}"/>
-                        </div>
-                        <div class="col-sm-2">
-                            <label for="txtFechaInicial">Fecha inicial</label>
-                            <input type="text" name="txtFechaInicial" class="form-control obligatorio datepicker" id="txtFechaInicial" placeholder="dd/mm/yyyy" maxlength="10" value="{{FechaInicial|date:"SHORT_DATE_FORMAT"}}"/>
-                        </div>
-                        <div class="col-sm-2">
-                            <label for="txtFechaFinal">Fecha final</label>
-                            <input type="text" name="txtFechaFinal" class="form-control obligatorio datepicker" id="txtFechaFinal" placeholder="dd/mm/yyyy" maxlength="10" value="{{FechaFinal|date:"SHORT_DATE_FORMAT"}}"/>
-                        </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <label for="txtTienda">Tienda</label>
+                        <input type="text" name="txtTienda" class="form-control obligatorio" id="txtTienda" placeholder="Numero de tienda" maxlength="5" value="{{Tienda}}" />
                     </div>
-                    
-                    <button class="btn btn-primary"  id="launchModal" style="margin-top: 10px;">
-                        Buscar
-                    </button>
-        </div>
+                    <div class="col-sm-2">
+                        <label for="txtNumCte">Num. Cte.</label>
+                        <input type="text" name="txtNumCte" class="form-control" id="txtNumCte" maxlength="10" value="{{numcte}}"/>
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="txtFechaInicial">Fecha inicial</label>
+                        <input type="text" name="txtFechaInicial" class="form-control obligatorio datepicker" id="txtFechaInicial" placeholder="dd/mm/yyyy" maxlength="10" value="{{FechaInicial|date:"SHORT_DATE_FORMAT"}}"/>
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="txtFechaFinal">Fecha final</label>
+                        <input type="text" name="txtFechaFinal" class="form-control obligatorio datepicker" id="txtFechaFinal" placeholder="dd/mm/yyyy" maxlength="10" value="{{FechaFinal|date:"SHORT_DATE_FORMAT"}}"/>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary"  id="launchModal" style="margin-top: 10px;">
+                    Buscar
+                </button>
+            </div>
         </div>
     </div>
     {%endif%}

@@ -54,12 +54,26 @@ def ValidoCorreos(ids):
                 correos.append((r.Correo,r.Password,r.id))
         regiones_error=sorted(set(regiones_error))
     return error, regiones_error, correos
-        
+    
 def EnvioCorreo(request,ajuste,correos):
     usuario=""
     password=""
     titulo='Ajuste de auditoria'
-    mensaje="Este es un mensaje de prueba para ver si el vaquero jala"
+    mensaje="""
+                Buen dia.
+                
+                Te envio la solicitud de ajuste del cliente # """+str(ajuste.NumCte)+""" mismo que no reconoce las compras afectando su credito en """+str(ajuste.NumCuentas)+""" Cuenta(s)
+                Anexo encontraras la documentacion digital que corresponde a este ajuste.
+                En caso de cualquier duda o aclaracion, estamos a tus ordenes
+                
+                Saludos cordiales
+                
+                """+ajuste.Region.GerenteRegion+"""
+                Region """+ajuste.Region.NombreRegion+"""
+                
+                
+                *** Este es un correo autogenerado ***
+            """
     for c in correos:
         if ajuste.Region.id==correos[2][0][2]:
             usuario=correos[2][0][0]

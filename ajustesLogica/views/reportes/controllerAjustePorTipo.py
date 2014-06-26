@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader, Context
@@ -19,8 +20,19 @@ def AjustePorTipoZona(request):
     totalCanc=0
     totalProc=0
     totalNoProc=0
+    fechainicial=datetime.min
+    fechafinal=datetime.max
+    error=False
+    msg=""
+    if request.method == 'POST':
+        datosValidacion=ValidoFechas(request)##DEVUELVE: error, msg, fechainicial, fechafinal
+        error=datosValidacion[0]
+        msg=datosValidacion[1]
+        fechainicial=datosValidacion[2]
+        fechafinal=datosValidacion[3]
+        
     for z in zonas:
-        ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z)\
+        ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region__Zona') \
                       .annotate(total = Count('Tienda')))
         ajuste=AjusteTipo(z.id,z.NombreZona)
@@ -29,7 +41,7 @@ def AjustePorTipoZona(request):
         
         totalReg+=ajustes[0]["total"]
         
-        ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,Activo=True)\
+        ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,Activo=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region__Zona') \
                       .annotate(total = Count('Tienda')))        
         tipo=TipoEspecifico("Activos",ajustes[0]["total"])
@@ -37,7 +49,7 @@ def AjustePorTipoZona(request):
         
         totalAct+=ajustes[0]["total"]
 
-        ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,Enviado=False)\
+        ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,Enviado=False, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region__Zona') \
                       .annotate(total = Count('Tienda')))        
         tipo=TipoEspecifico("Sin autorizar",ajustes[0]["total"])
@@ -45,7 +57,7 @@ def AjustePorTipoZona(request):
         
         totalSinAut+=ajustes[0]["total"]
 
-        ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,Enviado=True)\
+        ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,Enviado=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region__Zona') \
                       .annotate(total = Count('Tienda')))        
         tipo=TipoEspecifico("Enviados",ajustes[0]["total"])
@@ -53,7 +65,7 @@ def AjustePorTipoZona(request):
         
         totalEnv+=ajustes[0]["total"]
         
-        ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,Activo=False)\
+        ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,Activo=False, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region__Zona') \
                       .annotate(total = Count('Tienda')))        
         tipo=TipoEspecifico("Cancelados",ajustes[0]["total"])
@@ -61,7 +73,7 @@ def AjustePorTipoZona(request):
         
         totalCanc+=ajustes[0]["total"]
         
-        ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,ProcedeAjuste=True)\
+        ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,ProcedeAjuste=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region__Zona') \
                       .annotate(total = Count('Tienda')))        
         tipo=TipoEspecifico("Procede ajuste",ajustes[0]["total"])
@@ -69,7 +81,7 @@ def AjustePorTipoZona(request):
         
         totalProc+=ajustes[0]["total"]
         
-        ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,NoProcedeAjuste=True)\
+        ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,NoProcedeAjuste=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region__Zona') \
                       .annotate(total = Count('Tienda')))        
         tipo=TipoEspecifico("No Procede ajuste",ajustes[0]["total"])
@@ -86,6 +98,11 @@ def AjustePorTipoZona(request):
     totales.append(totalProc)
     totales.append(totalNoProc)
     
+    if fechainicial==datetime.min:
+        fechainicial=None
+    if fechafinal==datetime.max:
+        fechafinal=None
+        
     context = RequestContext(request, {
         'Titulo':'Ajustes por tipo por zona',        
         'Encabezado':'Zona',
@@ -93,6 +110,10 @@ def AjustePorTipoZona(request):
         'Titulos':Titulos,
         'Datos':datos,
         'Totales':totales,
+        'Error':error,
+        'MensajeError':msg,
+        'FechaInicial':fechainicial,
+        'FechaFinal':fechafinal,
     })
     return HttpResponse(template.render(context))
 
@@ -110,8 +131,18 @@ def AjustePorTipoRegion(request,zona_id):
     totalCanc=0
     totalProc=0
     totalNoProc=0
+    fechainicial=datetime.min
+    fechafinal=datetime.max
+    error=False
+    msg=""
+    if request.method == 'POST':
+        datosValidacion=ValidoFechas(request)##DEVUELVE: error, msg, fechainicial, fechafinal
+        error=datosValidacion[0]
+        msg=datosValidacion[1]
+        fechainicial=datosValidacion[2]
+        fechafinal=datosValidacion[3]
     for z in regiones:
-        ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z)\
+        ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region') \
                       .annotate(total = Count('Tienda')))
         ajuste=AjusteTipo(z.id,z.NombreRegion)
@@ -120,7 +151,7 @@ def AjustePorTipoRegion(request,zona_id):
         
         totalReg+=ajustes[0]["total"]
         
-        ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,Activo=True)\
+        ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,Activo=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region') \
                       .annotate(total = Count('Tienda')))        
         tipo=TipoEspecifico("Activos",ajustes[0]["total"])
@@ -128,7 +159,7 @@ def AjustePorTipoRegion(request,zona_id):
         
         totalAct+=ajustes[0]["total"]
         
-        ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,Enviado=False)\
+        ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,Enviado=False, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region') \
                       .annotate(total = Count('Tienda')))        
         tipo=TipoEspecifico("Enviados",ajustes[0]["total"])
@@ -136,7 +167,7 @@ def AjustePorTipoRegion(request,zona_id):
         
         totalSinAut+=ajustes[0]["total"]
         
-        ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,Enviado=True)\
+        ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,Enviado=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region') \
                       .annotate(total = Count('Tienda')))        
         tipo=TipoEspecifico("Enviados",ajustes[0]["total"])
@@ -144,7 +175,7 @@ def AjustePorTipoRegion(request,zona_id):
         
         totalEnv+=ajustes[0]["total"]
         
-        ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,Activo=False)\
+        ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,Activo=False, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region') \
                       .annotate(total = Count('Tienda')))        
         tipo=TipoEspecifico("Cancelados",ajustes[0]["total"])
@@ -152,7 +183,7 @@ def AjustePorTipoRegion(request,zona_id):
         
         totalCanc+=ajustes[0]["total"]
         
-        ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,ProcedeAjuste=True)\
+        ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,ProcedeAjuste=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region') \
                       .annotate(total = Count('Tienda')))        
         tipo=TipoEspecifico("Procede ajuste",ajustes[0]["total"])
@@ -160,7 +191,7 @@ def AjustePorTipoRegion(request,zona_id):
         
         totalProc+=ajustes[0]["total"]
         
-        ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,NoProcedeAjuste=True)\
+        ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,NoProcedeAjuste=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region') \
                       .annotate(total = Count('Tienda')))        
         tipo=TipoEspecifico("No Procede ajuste",ajustes[0]["total"])
@@ -176,7 +207,10 @@ def AjustePorTipoRegion(request,zona_id):
     totales.append(totalCanc)
     totales.append(totalProc)
     totales.append(totalNoProc)
-    
+    if fechainicial==datetime.min:
+        fechainicial=None
+    if fechafinal==datetime.max:
+        fechafinal=None
     context = RequestContext(request, {
         'Titulo':'Ajustes por tipo por region',        
         'Encabezado':'Region',
@@ -184,6 +218,10 @@ def AjustePorTipoRegion(request,zona_id):
         'Titulos':Titulos,
         'Datos':datos,
         'Totales':totales,
+        'Error':error,
+        'MensajeError':msg,
+        'FechaInicial':fechainicial,
+        'FechaFinal':fechafinal,
     })
     return HttpResponse(template.render(context))
 
@@ -191,6 +229,31 @@ def ValidoAjustes(ajustes):
     if ajustes.__len__()==0:        
         ajustes=[{"total":0}]
     return ajustes
+
+def ValidoFechas(request):
+    error=False
+    msg=""
+    fechainicial=datetime.min
+    fechafinal=datetime.max
+    try:
+        fechainicial=request.POST["fechaInicial"]
+        fechainicial=datetime.strptime(fechainicial,"%d/%m/%Y")
+    except:
+        error=True
+        msg="La fecha inicial esta en formato incorrecto, debe ser dd/mm/aaaa"
+    try:
+        fechafinal=request.POST["fechaFinal"]
+        fechafinal=datetime.strptime(fechafinal,"%d/%m/%Y")
+    except:
+        error=True
+        msg="La fecha final esta en formato incorrecto, debe ser dd/mm/aaaa"
+
+            
+    if type(fechainicial) is datetime and type(fechafinal) is datetime and fechainicial>=fechafinal:
+        error=True
+        msg ="La fecha final debe ser mayor a la fecha inicial"
+    
+    return error, msg, fechainicial, fechafinal
 
 class AjusteTipo(object):
     ID=0
