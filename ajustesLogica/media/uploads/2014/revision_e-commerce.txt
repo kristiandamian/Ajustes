@@ -1,0 +1,27 @@
+-Proceso de desarrollo
+-Proceso de deployment
+-Proceso de SEO
+
+-políticas de responsabilidad, 
+-políticas de control de acceso
+-políticas de confidencialidad 
+-políticas de integridad de los datos
+
+-seguridad en bases de datos
+-Seguridad de acceso
+-seguridad de transacciones
+-seguridad del lado del cliente
+-seguridad en los mensajes
+-seguridad en comunicaciones
+-seguridad en los servidores
+
+
+ 
+BUSCAR
+----------------------------------------------------------------- 
+Gestión de Riesgos de Compliance en medios de pagos de tarjetas 
+El estándar PCI-DSS exige verificaciones técnicas de seguridad: 
+? Test de penetración. Periodicidad anual 
+? Escaneos ASV (Approved Scanning Vendors). Periodicidad trimestral. 
+? Escaneos de vulnerabilidades internas. Periodicidad trimestral. 
+? Escaneos inalámbricos. Periodicidad trimestral.

@@ -240,8 +240,8 @@
                     }
                     else
                     {
-                        AgregoCierre(d);
-                        //AgregoNotas(d);                        
+                        AgregoNotas(d);
+                        AgregoCierre(d);                        
                     }
                 }
             };
@@ -328,120 +328,125 @@
     
     AgregoAjuste=function (d,tablaID){
                         ajustes=eval(d.ajustes);
-                        $.each(ajustes, function(index, value) {
-                            var tabla="<tr><td style='display: none'>"+
-                                value.pk
-                                +"</td><td>"+
-                                value.fields.NumCte
-                                +"</td><td>"+
-                                value.fields.Tienda
-                                +"</td><td>"+
-                                value.fields.FechaRecepcion
-                                +"</td><td>"+
-                                value.fields.NumEmpleado
-                                +"</td><td>"+
-                                value.fields.NomEmpleado                                
-                                +"</td><td>"+
-                                value.fields.NumCuentas
-                                +"</td><td>"+
-                                value.fields.Monto
-                                +"</td><td>";
-                                if (value.fields.Finalizado) {
-                                    if (value.fields.ProcedeAjuste)
-                                    {
-                                        tabla+="Procede Ajuste";
-                                    }
-                                    else{
-                                        tabla+="No Procede Ajuste";
-                                    }                                
-                                }
-                                else{
-                                    tabla+="No finalizado"
-                                }
-                                tabla+="</td><td>";
-                                if (value.fields.Activo){
-                                    if (value.fields.Finalizado){
-                                        tabla+="Finalizado";
-                                    }
-                                    else{
-                                        if (value.fields.Enviado){
-                                            tabla+="Enviado";
+                        if (ajustes!=null) {
+                            $.each(ajustes, function(index, value) {
+                                var tabla="<tr><td style='display: none'>"+
+                                    value.pk
+                                    +"</td><td>"+
+                                    value.fields.NumCte
+                                    +"</td><td>"+
+                                    value.fields.Tienda
+                                    +"</td><td>"+
+                                    value.fields.FechaRecepcion
+                                    +"</td><td>"+
+                                    value.fields.NumEmpleado
+                                    +"</td><td>"+
+                                    value.fields.NomEmpleado                                
+                                    +"</td><td>"+
+                                    value.fields.NumCuentas
+                                    +"</td><td>"+
+                                    value.fields.Monto
+                                    +"</td><td>";
+                                    if (value.fields.Finalizado) {
+                                        if (value.fields.ProcedeAjuste)
+                                        {
+                                            tabla+="Procede Ajuste";
                                         }
                                         else{
-                                           tabla+="Activo";
+                                            tabla+="No Procede Ajuste";
+                                        }                                
+                                    }
+                                    else{
+                                        tabla+="No finalizado"
+                                    }
+                                    tabla+="</td><td>";
+                                    if (value.fields.Activo){
+                                        if (value.fields.Finalizado){
+                                            tabla+="Finalizado";
+                                        }
+                                        else{
+                                            if (value.fields.Enviado){
+                                                tabla+="Enviado";
+                                            }
+                                            else{
+                                               tabla+="Activo";
+                                            }
                                         }
                                     }
-                                }
-                                else{
-                                    tabla+="Cancelado";
-                                }
-                                tabla+="</td><td><input type='checkbox' class='selec'></td></tr>";
-                            $("#"+tablaID).append(tabla);
-                            $(".selec").change(function(){
-                                    $(".selec").not(this).attr("checked", false);
-                                });
-                        });
+                                    else{
+                                        tabla+="Cancelado";
+                                    }
+                                    tabla+="</td><td><input type='checkbox' class='selec'></td></tr>";
+                                $("#"+tablaID).append(tabla);
+                                $(".selec").change(function(){
+                                        $(".selec").not(this).attr("checked", false);
+                                    });
+                            });
+                        }
                 }
     AgregoNotas=function (d){
                         $("#CuentasAjuste tr:gt(0)").remove();
                         notas=eval(d.cuentas);
-                        $.each(notas, function(index, value) {
-                            var tabla="<tr><td>"+
-                                value.fields.Factura
-                                +"</td><td>"+
-                                value.fields.Tipo
-                                +"</td><td>"+
-                                value.fields.Tienda
-                                +"</td><td>"+
-                                value.fields.Fecha
-                                +"</td><td>"+
-                                value.fields.Monto
-                                +"</td>";                                                   
-                            $("#CuentasAjuste").append(tabla);
-                        });
-                        $("#CuentasAjuste tr:gt(0)").find("td:eq(1)").each(function(){
-                                var tipo=$(this).text();
-                                var _this=this;
-                                $.each(d.TipoCentroCuenta,function(index,value){                                    
-                                    if (tipo==value[0]) {
-                                        $(_this).text(value[1]);
-                                    }                                    
-                                });
+                        if (notas!=null) {
+                            $.each(notas, function(index, value) {
+                                var tabla="<tr><td>"+
+                                    value.fields.Factura
+                                    +"</td><td>"+
+                                    value.fields.Tipo
+                                    +"</td><td>"+
+                                    value.fields.Tienda
+                                    +"</td><td>"+
+                                    value.fields.Fecha
+                                    +"</td><td>"+
+                                    value.fields.Monto
+                                    +"</td>";                                                   
+                                $("#CuentasAjuste").append(tabla);
                             });
-                        
+                            $("#CuentasAjuste tr:gt(0)").find("td:eq(1)").each(function(){
+                                    var tipo=$(this).text();
+                                    var _this=this;
+                                    $.each(d.TipoCentroCuenta,function(index,value){                                    
+                                        if (tipo==value[0]) {
+                                            $(_this).text(value[1]);
+                                        }                                    
+                                    });
+                                });
+                        }
                 };
     AgregoCierre=function(d){                        
                         $("#EmpleadosInvolucrados tr:gt(0)").remove();
                         cierre=eval(d.datosCierre);
-                        empleados=eval(d.empleados);                        
-                        $("#txtEstatus").val(cierre[0].fields.Estatus);
-                        $("#txtObservaciones").val(cierre[0].fields.Observaciones);
-                        
-                        $.each(d.EstatusCierre,function(index,value){                                    
-                            if ($("#txtEstatus").val()==value[0]) {
-                                $("#txtEstatus").val(value[1]);
-                            }                                    
-                        });
-                        
-                        $.each(empleados, function(index, value) {
-                            var tabla="<tr><td>"+
-                                value.fields.NumEmpleado
-                                +"</td><td>"+
-                                value.fields.NomEmpleado
-                                +"</td><td>"+
-                                value.fields.EstatusLaboral
-                                +"</td>";                                                   
-                            $("#EmpleadosInvolucrados").append(tabla);
-                        });
-                        $("#EmpleadosInvolucrados tr:gt(0)").find("td:eq(2)").each(function(){
-                                var tipo=$(this).text();
-                                var _this=this;
-                                $.each(d.EstatusLaboral,function(index,value){                                    
-                                    if (tipo==value[0]) {
-                                        $(_this).text(value[1]);
-                                    }                                    
-                                });
+                        empleados=eval(d.empleados);
+                        if (cierre!=null) {
+                            $("#txtEstatus").val(cierre[0].fields.Estatus);
+                            $("#txtObservaciones").val(cierre[0].fields.Observaciones);
+                                                
+                            $.each(d.EstatusCierre,function(index,value){                                    
+                                if ($("#txtEstatus").val()==value[0]) {
+                                    $("#txtEstatus").val(value[1]);
+                                }                                    
                             });
+                            
+                            $.each(empleados, function(index, value) {
+                                var tabla="<tr><td>"+
+                                    value.fields.NumEmpleado
+                                    +"</td><td>"+
+                                    value.fields.NomEmpleado
+                                    +"</td><td>"+
+                                    value.fields.EstatusLaboral
+                                    +"</td>";                                                   
+                                $("#EmpleadosInvolucrados").append(tabla);
+                            });
+                            $("#EmpleadosInvolucrados tr:gt(0)").find("td:eq(2)").each(function(){
+                                    var tipo=$(this).text();
+                                    var _this=this;
+                                    $.each(d.EstatusLaboral,function(index,value){                                    
+                                        if (tipo==value[0]) {
+                                            $(_this).text(value[1]);
+                                        }                                    
+                                    });
+                                });
+                            }
                     };
     /////////////////////////////|||)
     ///////MANEJO POST ENVIO/////|||)
@@ -514,21 +519,23 @@
                             }
                             else
                             {
-                                sas=eval(d.sas);                                
-                                $.each(sas, function(index, value) {
-                                    var tabla="<tr><td>"+
-                                        value.fields.Folio
-                                        +"</td><td>"+
-                                        value.fields.Destinatario
-                                        +"</td><td>"+
-                                        value.fields.Puesto
-                                        +"</td><td>"+
-                                        value.fields.Tema
-                                        +"</td><td>"+
-                                        value.fields.Fecha                                        
-                                        +"</td></tr>";
-                                    $("#SeguimientoSA").append(tabla);
-                                });                                    
+                                sas=eval(d.sas);
+                                if (sas!=null) {
+                                    $.each(sas, function(index, value) {
+                                        var tabla="<tr><td>"+
+                                            value.fields.Folio
+                                            +"</td><td>"+
+                                            value.fields.Destinatario
+                                            +"</td><td>"+
+                                            value.fields.Puesto
+                                            +"</td><td>"+
+                                            value.fields.Tema
+                                            +"</td><td>"+
+                                            value.fields.Fecha                                        
+                                            +"</td></tr>";
+                                        $("#SeguimientoSA").append(tabla);
+                                    });
+                                }
                             }
                         }
                     };

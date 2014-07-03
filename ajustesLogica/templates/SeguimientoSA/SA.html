@@ -177,7 +177,7 @@
         })
         
         {% if not BusquedaAjuste %}
-            BuscoAjusteEspecifico();
+            //BuscoAjusteEspecifico();
         {% endif %}
     });
     /////////////////////////////|||)
@@ -309,27 +309,29 @@
     
     AgregoAjuste=function (d,tablaID){
                         ajustes=eval(d.ajustes);
-                        $.each(ajustes, function(index, value) {
-                            var tabla="<tr><td style='display: none'>"+
-                                value.pk
-                                +"</td><td>"+
-                                value.fields.NumCte
-                                +"</td><td>"+
-                                value.fields.Tienda
-                                +"</td><td>"+
-                                value.fields.FechaRecepcion
-                                +"</td><td>"+
-                                value.fields.NumEmpleado
-                                +"</td><td>"+
-                                value.fields.NumCuentas
-                                +"</td><td>"+
-                                value.fields.Monto
-                                +"</td><td><input type='checkbox' class='selec'></td></tr>";
-                            $("#"+tablaID).append(tabla);
-                            $(".selec").change(function(){
-                                    $(".selec").not(this).attr("checked", false);
-                                });
-                        });
+                        if (ajustes!=null) {
+                            $.each(ajustes, function(index, value) {
+                                var tabla="<tr><td style='display: none'>"+
+                                    value.pk
+                                    +"</td><td>"+
+                                    value.fields.NumCte
+                                    +"</td><td>"+
+                                    value.fields.Tienda
+                                    +"</td><td>"+
+                                    value.fields.FechaRecepcion
+                                    +"</td><td>"+
+                                    value.fields.NumEmpleado
+                                    +"</td><td>"+
+                                    value.fields.NumCuentas
+                                    +"</td><td>"+
+                                    value.fields.Monto
+                                    +"</td><td><input type='checkbox' class='selec'></td></tr>";
+                                $("#"+tablaID).append(tabla);
+                                $(".selec").change(function(){
+                                        $(".selec").not(this).attr("checked", false);
+                                    });
+                            });
+                        }
                 }
     /////////////////////////////|||)
     ///////MANEJO POST ENVIO/////|||)
@@ -367,21 +369,23 @@
                             }
                             else
                             {
-                                sas=eval(d.sas);                                
-                                $.each(sas, function(index, value) {
-                                    var tabla="<tr><td>"+
-                                        value.fields.Folio
-                                        +"</td><td>"+
-                                        value.fields.Destinatario
-                                        +"</td><td>"+
-                                        value.fields.Puesto
-                                        +"</td><td>"+
-                                        value.fields.Tema
-                                        +"</td><td>"+
-                                        value.fields.Fecha                                        
-                                        +"</td></tr>";
-                                    $("#SeguimientoSA").append(tabla);
-                                });                                    
+                                sas=eval(d.sas);
+                                if (sas!=null) {
+                                    $.each(sas, function(index, value) {
+                                        var tabla="<tr><td>"+
+                                            value.fields.Folio
+                                            +"</td><td>"+
+                                            value.fields.Destinatario
+                                            +"</td><td>"+
+                                            value.fields.Puesto
+                                            +"</td><td>"+
+                                            value.fields.Tema
+                                            +"</td><td>"+
+                                            value.fields.Fecha                                        
+                                            +"</td></tr>";
+                                        $("#SeguimientoSA").append(tabla);
+                                    });
+                                }
                             }
                         }
                     };

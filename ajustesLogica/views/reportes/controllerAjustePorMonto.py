@@ -122,7 +122,7 @@ def AjustePorMontoZona(request):
 @login_required(login_url=Configuracion.LOGIN_URL)
 def AjustePorMontoRegion(request,zona_id):
     template = loader.get_template(URI_TEMPLATE)
-    regiones=RegionAuditoria.objects.PorPermiso(request.user)
+    regiones=RegionAuditoria.objects.filter(Zona__id=zona_id)
     Titulos=["Registrados","Activos","Sin autorizar","Enviados","Cancelados","Procede ajuste","No Procede ajuste"]
     datos=[]
     totales=[]
@@ -214,7 +214,7 @@ def AjustePorMontoRegion(request,zona_id):
     if fechafinal==datetime.max:
         fechafinal=None
     context = RequestContext(request, {
-        'Titulo':'Ajustes por monto por region',        
+        'Titulo':'Ajustes por monto por region',
         'Encabezado':'Region',
         'URL':None,
         'Titulos':Titulos,

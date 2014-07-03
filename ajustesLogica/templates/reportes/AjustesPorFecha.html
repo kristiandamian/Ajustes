@@ -52,7 +52,8 @@
                         <td>Fecha Recepcion</td>
                         <td>Num. Empleado</td>
                         <td>Num. Cuentas</td>
-                        <td>Monto</td>                        
+                        <td>Monto</td>
+                        <td>Ver</td>
                     </tr>
                     </thead>
                     {%for a in Datos %}
@@ -77,6 +78,11 @@
                         </td>
                         <td>
                             {{a.Monto}}
+                        </td>
+                        <td>
+                            <a href="/ajustes/Ajuste/{{a.id}}"
+                                <span class="glyphicon glyphicon-search"></span>
+                            </a>
                         </td>
                     </tr>
                     {%endfor%}

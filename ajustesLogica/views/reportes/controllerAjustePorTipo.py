@@ -120,7 +120,7 @@ def AjustePorTipoZona(request):
 @login_required(login_url=Configuracion.LOGIN_URL)
 def AjustePorTipoRegion(request,zona_id):
     template = loader.get_template('reportes/AjustesPorTipo.html')
-    regiones=RegionAuditoria.objects.PorPermiso(request.user)
+    regiones=RegionAuditoria.objects.filter(Zona__id=zona_id)
     Titulos=["Registrados","Activos","Sin autorizar","Enviados","Cancelados","Procede ajuste","No Procede ajuste"]
     datos=[]
     totales=[]

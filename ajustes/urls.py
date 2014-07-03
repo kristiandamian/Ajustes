@@ -67,7 +67,7 @@ urlpatterns = patterns('',
     url(r'^ajustes/ajax/BuscarAjustes/$',BuscarAjustes),
     url(r'^ajustes/ajax/BuscarAjuste/$',BuscarAjuste),
     url(r'^ajustes/ajax/BuscarTodosLosAjustes/$',BuscarTodosLosAjustes),
-    url(r'^ajustes/ajax/BuscarDatosAjuste/$',BuscarNotasAjuste),    
+    url(r'^ajustes/ajax/BuscarDatosAjuste/$',BuscarNotasAjuste),
     url(r'^ajustes/ajax/RegistroAutorizacion/$',RegistroAutorizacion),
     url(r'^ajustes/ajax/upload/$',upload),
     url(r'^ajustes/ajax/BuscarEvidencias/$',BuscarEvidencias),
@@ -82,8 +82,7 @@ urlpatterns = patterns('',
 ############################################################################################################   
     #url(r'^ajustes/ReenviarCorreo/$',ReenviarCorreo),    
     url(r'^ajustes/ConfiguracionCorreo/$',ConfiguracionCorreo),
-    url(r'^ajustes/CancelarAjustes/$',CancelarAjuste),
-    
+    url(r'^ajustes/CancelarAjustes/$',CancelarAjuste),    
 ############################################################################################################
 ####    REPORTES                                                                                        ####
 ############################################################################################################   
