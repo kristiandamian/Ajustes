@@ -15,8 +15,8 @@ class ZonaAuditoriaManager(models.Manager):
             if u.Zona!=None:
                 zonas+=ZonaAuditoria.objects.filter(id=u.Zona.id).values_list("id",flat=True)
             else:
-                if u.Region!=None:                
-                    zonas+=RegionAuditoria.objects.filter(Zona__id=u.Zona.id).values_list("Zona__id",flat=True)            
+                if u.Region!=None:
+                    zonas+=RegionAuditoria.objects.filter(Zona__id=u.Zona.id).values_list("Zona__id",flat=True)
         return super(ZonaAuditoriaManager,self).get_query_set().filter(id__in = zonas)
     
 class ZonaAuditoria(models.Model):
@@ -68,7 +68,7 @@ class RegionAuditoria(models.Model):
 #                if u.Zona!=None:                
 #                    tdas+=ZonaAuditoria.objects.filter(id=u.Zona__id).values_list("Tienda",flat=True)            
 #        return super(AjusteManager,self).get_query_set().filter(Tienda__in = tdas)
-    
+
 class Ajuste(models.Model):
     Region = models.ForeignKey(RegionAuditoria)
     FechaRecepcion=models.DateField()
@@ -79,11 +79,12 @@ class Ajuste(models.Model):
     NumCte = models.IntegerField('Num. de cliente')
     NumCuentas = models.IntegerField('Num. de cuentas a ajustar')
     Monto=models.DecimalField(verbose_name='Monto del ajuste',default=0, max_digits=18,decimal_places=2)
-    Activo=models.BooleanField(verbose_name='Procede ajuste', default=True)
+    Activo=models.BooleanField(verbose_name='Estatus', default=True)
     ProcedeAjuste=models.BooleanField(verbose_name='Procede ajuste', blank=True)
     NoProcedeAjuste=models.BooleanField(verbose_name='Procede ajuste', blank=True)
     FechaRegistroSistema=models.DateTimeField(auto_now=True)
     Enviado=models.BooleanField(verbose_name='Enviado a cobranza ajuste', default=False)
+    Finalizado=models.BooleanField(default=False)
     Usuario=models.ForeignKey(User)
     
     class Meta:
@@ -91,6 +92,65 @@ class Ajuste(models.Model):
             ("Puede_Cancelar", "Puede cancelar ajustes"),
         )
 
+class ClasificacionAjuste(models.Model):    
+    Clasificacion=models.CharField(max_length=1000)
+    Descripcion=models.CharField(max_length=10000)
+    
+    def __unicode__(self):
+        return u'%s' % (self.Clasificacion)
+    
+class CuentaAfectadaAjuste(models.Model):
+    TIPO_CENTRO=(
+        (1,'Muebles'),
+        (2,'Ropa'),
+        (3,'Cajas'),
+        (4,'Tiempo Aire'),
+        (5,'Coppel.com'),
+        (6,'Negocios afiliados')
+    )
+    AjusteAfectado=models.ForeignKey(Ajuste)
+    Tipo=models.IntegerField(choices=TIPO_CENTRO)
+    Factura=models.IntegerField()
+    Tienda=models.IntegerField(verbose_name='Tda. donde se facturo')
+    Fecha=models.DateField(verbose_name='Fecha de la factura')
+    Monto=models.DecimalField(verbose_name='Monto de la factura',default=0, max_digits=18,decimal_places=2)
+
+class CuentaAfectadaAjusteForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(CuentaAfectadaAjusteForm, self).__init__(*args, **kwargs)
+        for k, field in self.fields.items():
+            if 'required' in field.error_messages:
+                field.error_messages['required'] = 'El campo es requerido.'
+    class Meta:
+        model=CuentaAfectadaAjuste
+        widgets  = {
+            'Fecha': DateInput(attrs={'class':'datepicker'}),
+        }
+        exclude=('AjusteAfectado')
+
+class CierreAjuste(models.Model):
+    TIPO_ESTATUS=(
+        (1,'Recuperable'),
+        (2,'No Recuperable'),
+        (3,'Aclarado con soporte'),
+    )
+    AjusteAfectado=models.ForeignKey(Ajuste)
+    Clasificacion=models.ForeignKey(ClasificacionAjuste)
+    Observaciones = models.CharField(max_length=5000)
+    Estatus=models.IntegerField(choices=TIPO_ESTATUS)    
+    FechaRegistroSistema=models.DateTimeField(auto_now=True)
+    Usuario=models.ForeignKey(User)
+
+class EmpleadosResponsables(models.Model):
+    TIPO_ESTATUS_LABORAL=(
+        (1,'Activo en nomina'),
+        (2,'Baja'),
+    )
+    Cierre= models.ForeignKey(CierreAjuste)
+    NumEmpleado = models.IntegerField('Num. Empleado que manda ajustar')
+    NomEmpleado = models.CharField('Nombre del empleado que manda ajustar',max_length=200)
+    EstatusLaboral=models.IntegerField(choices=TIPO_ESTATUS_LABORAL)
+    
 class AjusteForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(AjusteForm, self).__init__(*args, **kwargs)
@@ -102,7 +162,7 @@ class AjusteForm(ModelForm):
         widgets  = {
             'FechaRecepcion': DateInput(attrs={'class':'datepicker'}),
         }
-        exclude=('FechaRegistroSistema','Usuario','ProcedeAjuste','NoProcedeAjuste','Activo','Enviado')
+        exclude=('FechaRegistroSistema','Usuario','ProcedeAjuste','NoProcedeAjuste','Activo','Enviado','Finalizado')
 
 class ImagenAjuste(models.Model):
     Imagen = models.CharField('Imagen',max_length=500)
@@ -147,4 +207,13 @@ class UsuarioAcceso(models.Model):
         
 class UsuarioAccesoAdmin(admin.ModelAdmin):
     list_filter =('Zona__NombreZona',)
-    search_fields =['Usuario__username','Zona__NombreZona','Region__NombreRegion']        
+    search_fields =['Usuario__username','Zona__NombreZona','Region__NombreRegion']
+    
+class SeguimientoSA(models.Model):
+    AjusteAfectado=models.ForeignKey(Ajuste)
+    Folio=models.CharField(max_length=500)
+    Destinatario=models.CharField(max_length=500)
+    Puesto=models.CharField(max_length=500)
+    Tema=models.CharField(max_length=5000)
+    Fecha=models.DateField()
+    

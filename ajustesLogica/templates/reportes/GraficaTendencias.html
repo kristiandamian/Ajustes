@@ -34,7 +34,11 @@
                         <label for="fechaFinal">Fecha Final</label>
                         <input type="text" name="fechaFinal" class="form-control datepicker obligatorio" id="fechaFinal"
                                placeholder="dd/mm/yyyy" maxlength="10" value="{{FechaFinal|date:"SHORT_DATE_FORMAT"}}" />
-                    </div>                    
+                    </div>
+                    <div class="col-sm-2" style="padding-top: 20px;">
+                        <input type="radio" style="margin-right:3px;" checked="checked"><label>Monto</label>
+                        <input type="radio" style="margin-right:3px;" id="NumAjustes" name="NumAjustes"><label>Num. Ajustes</label>
+                    </div>
                 </div>
                 <input id="btnBuscar" type="submit" value="Buscar" class="btn btn-primary" style="margin-top:15px;"/>
             </div>
@@ -71,6 +75,10 @@
                     {%endif%}
                {% endifequal %}
             {% endif %}
+            $("input:radio").on("change",function(){            
+                $(this).attr("change","checked");
+                $(":radio").not(this).removeAttr("checked");
+            })
        });
         
         function GeneroGrafica(){

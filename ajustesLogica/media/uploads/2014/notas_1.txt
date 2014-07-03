@@ -1,0 +1,15 @@
+-call_history.db
+-jailbrake needed
+
+------------------------------------------------------------------------------------------------------------------------------
+https://waaave.com/tutorial/django/how-to-quickly-upload-files-in-ajax-with-django-in-5-steps/
+------------------------------------------------------------------------------------------------------------------------------
+http://www.tryolabs.com/Blog/2011/03/17/uploading-image-and-saving-it-os-file/ 
+------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+TABLEROS EJEMPLOS
+------------------------------------------------------------------------------------------------------------------------------
+http://www.pentaho.com/fine-art-business-intelligence?mkt_tok=3RkMMJWWfF9wsRonvKvOc%2B%2FhmjTEU5z17%2B4kWaeg38431UFwdcjKPmjr1YIGRMJqI%2BSLDwEYGJlv6SgFTLjFMa9u2bgMWBE%3D

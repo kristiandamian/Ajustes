@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-{% load staticfiles %}    
+    {% load staticfiles %}    
 <link href="{% static "css/dark-hive/jquery-ui-1.10.4.custom.min.css" %}" rel="stylesheet">
 <h1>{{ Titulo }}</h1>
     <div>
@@ -23,35 +23,57 @@
             </div>
         </form>        
     </div>
+
 <table class="table table-striped table-hover" id="TotalUnidades">
-        <tr class="success">
-            <td>{{Encabezado}}</td>
-                {% for t in Titulos%}
-                <td>{{t}}</td>
-                {% endfor %}
-        </tr>
-        
-{% for r in Datos %}        
-        <tr>
-                {% if URL %}
-                        <td><b><a href="{{URL}}{{ r.ID }}/">{{ r.Desc }}</a></b></td>
-                {%else%}
-                        <td><b>{{ r.Desc }}</b></td>
-                {%endif%}                
-                {% for t in r.Tipos%}                        
-                    <td >{{t.Total}}</td>
-                {% endfor %}
-        </tr>
+    <tr class="success" style="text-align: center">
+        <td rowspan="2">Clasificaci&oacute;n</td>
+        {%if Zonas%}
+            {% for t in Zonas%}
+                <td colspan="2"><a href="{{URL}}{{t.id}}">{{t.NombreZona}}</a></td>
+            {% endfor %}
+        {%else%}
+            {% for t in Regiones%}
+                <td colspan="2">{{t.NombreRegion}}</td>
+            {% endfor %}
+        {%endif%}
+        <td colspan="2">Totales</td>
+    </tr>
+    <tr class="success">
+        {% for t in Zonas%}
+            <td>Num.</td>
+            <td>Monto</td>
+        {% endfor %}
+        {% for t in Regiones %}
+            <td>Num.</td>
+            <td>Monto</td>
+        {% endfor %}
+        <td>Tot. Num.</td>
+        <td>Tot. Monto</td>
+    </tr>
+{% for r in Datos %}       
+    <tr>
+        <td class="show-tooltip"><div data-toggle="tooltip" data-placement="right" title="{{r.descripcion}}">{{r.nombre}}</div>        
+        </td>
+        {% for d in r.detalles%}
+            <td>{{d.total}}</td>
+            <td class="moneda">{{d.monto}}</td>
+        {%endfor%}
+        <td><b>{{r.total}}</b></td>
+        <td class="moneda"><b>{{r.monto}}</b></td>    
+    </tr>
 {% endfor %}
 <tr>
-    <td>Totales</td>    
+    <td><b>TOTALES</b></td>
     {% for t in Totales%}
-        <td class="moneda">{{ t }}</td>    
-    {%endfor%}
+        {% for key, value in t.items %}             
+            <td>{{value.0}}</td>
+            <td>{{value.1}}</td>
+        {% endfor %}
+    {% endfor %}
+    <td><b><i>{{granTotal}}</i></b></td>
+    <td class="moneda"><b><i>{{granTotalMonto}}</i></b></td>    
 </tr>
 </table>
-
-
 <script src="{% static "js/Utilerias.js" %}"></script>   
 <script type="text/javascript" src="{% static "js/jquery-ui-1.10.4.custom.min.js" %}"></script>
 <script type="text/javascript" src="{% static "js/datepickerUtil.js" %}"></script>
@@ -64,6 +86,8 @@
         {%if Error%}
                 alert("{{MensajeError}}");
         {%endif%}
+        
+        $(".show-tooltip div").tooltip();
     });
 </script>
 {% endblock %}

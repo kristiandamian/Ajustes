@@ -36,9 +36,9 @@ def BuscarAjustes(request):
         msg ="La fecha final debe ser mayor a la fecha inicial"
     if not error:
         if numcte.__len__()>0:
-            ajustes=Ajuste.objects.filter(Tienda=tienda, NumCte=int(numcte), FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion","Tienda","NumCte")
+            ajustes=Ajuste.objects.filter(Finalizado=False,Activo=True,Tienda=tienda, NumCte=int(numcte), FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion","Tienda","NumCte")
         else:
-            ajustes=Ajuste.objects.filter(Tienda=tienda, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion","Tienda","NumCte")
+            ajustes=Ajuste.objects.filter(Finalizado=False,Activo=True,Tienda=tienda, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion","Tienda","NumCte")
         if ajustes.__len__()<=0:
             ajustes=None
         else:
@@ -108,7 +108,6 @@ def upload(request):
     response_data['mensaje'] = msg
     return HttpResponse(json.dumps(response_data), content_type="application/json")
     return HttpResponse(json.dumps(response_data), content_type='application/json')
-
 
 @login_required(login_url=Configuracion.LOGIN_URL)
 @csrf_exempt

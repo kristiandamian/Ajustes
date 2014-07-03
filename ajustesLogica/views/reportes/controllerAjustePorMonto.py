@@ -2,13 +2,15 @@ from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader, Context
-from django.db.models import Count
+from django.db.models import Sum
 from ajustesLogica.models import RegionAuditoria, Ajuste, ZonaAuditoria
 from ajustesLogica.Config import Configuracion
 
+URI_TEMPLATE='reportes/AjustesPorMonto.html'
+
 @login_required(login_url=Configuracion.LOGIN_URL)
-def AjustePorTipoZona(request):
-    template = loader.get_template('reportes/AjustesPorTipo.html')
+def AjustePorMontoZona(request):
+    template = loader.get_template(URI_TEMPLATE)
     zonas=ZonaAuditoria.objects.PorPermiso(request.user)
     Titulos=["Registrados","Activos","Sin autorizar","Enviados","Cancelados","Procede ajuste","No Procede ajuste"]
     datos=[]
@@ -34,7 +36,7 @@ def AjustePorTipoZona(request):
     for z in zonas:
         ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region__Zona') \
-                      .annotate(total = Count('Tienda')))
+                      .annotate(total = Sum('Monto')))
         ajuste=AjusteTipo(z.id,z.NombreZona)
         tipo=TipoEspecifico("Registrados",ajustes[0]["total"])
         ajuste.AddTipo(tipo)
@@ -43,7 +45,7 @@ def AjustePorTipoZona(request):
         
         ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,Activo=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region__Zona') \
-                      .annotate(total = Count('Tienda')))        
+                      .annotate(total = Sum('Monto')))        
         tipo=TipoEspecifico("Activos",ajustes[0]["total"])
         ajuste.AddTipo(tipo)
         
@@ -51,7 +53,7 @@ def AjustePorTipoZona(request):
 
         ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,Enviado=False, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region__Zona') \
-                      .annotate(total = Count('Tienda')))        
+                      .annotate(total = Sum('Monto')))        
         tipo=TipoEspecifico("Sin autorizar",ajustes[0]["total"])
         ajuste.AddTipo(tipo)
         
@@ -59,7 +61,7 @@ def AjustePorTipoZona(request):
 
         ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,Enviado=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region__Zona') \
-                      .annotate(total = Count('Tienda')))        
+                      .annotate(total = Sum('Monto')))        
         tipo=TipoEspecifico("Enviados",ajustes[0]["total"])
         ajuste.AddTipo(tipo)
         
@@ -67,7 +69,7 @@ def AjustePorTipoZona(request):
         
         ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,Activo=False, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region__Zona') \
-                      .annotate(total = Count('Tienda')))        
+                      .annotate(total = Sum('Monto')))        
         tipo=TipoEspecifico("Cancelados",ajustes[0]["total"])
         ajuste.AddTipo(tipo)
         
@@ -75,7 +77,7 @@ def AjustePorTipoZona(request):
         
         ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,ProcedeAjuste=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region__Zona') \
-                      .annotate(total = Count('Tienda')))        
+                      .annotate(total = Sum('Monto')))        
         tipo=TipoEspecifico("Procede ajuste",ajustes[0]["total"])
         ajuste.AddTipo(tipo)
         
@@ -83,7 +85,7 @@ def AjustePorTipoZona(request):
         
         ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,NoProcedeAjuste=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region__Zona') \
-                      .annotate(total = Count('Tienda')))        
+                      .annotate(total = Sum('Monto')))        
         tipo=TipoEspecifico("No Procede ajuste",ajustes[0]["total"])
         ajuste.AddTipo(tipo)
         
@@ -104,9 +106,9 @@ def AjustePorTipoZona(request):
         fechafinal=None
         
     context = RequestContext(request, {
-        'Titulo':'Ajustes por tipo por zona',        
+        'Titulo':'Ajustes por monto por zona',        
         'Encabezado':'Zona',
-        'URL':'/ajustes/AjustePorTipoRegion/',
+        'URL':'/ajustes/AjustePorMontoRegion/',
         'Titulos':Titulos,
         'Datos':datos,
         'Totales':totales,
@@ -118,8 +120,8 @@ def AjustePorTipoZona(request):
     return HttpResponse(template.render(context))
 
 @login_required(login_url=Configuracion.LOGIN_URL)
-def AjustePorTipoRegion(request,zona_id):
-    template = loader.get_template('reportes/AjustesPorTipo.html')
+def AjustePorMontoRegion(request,zona_id):
+    template = loader.get_template(URI_TEMPLATE)
     regiones=RegionAuditoria.objects.PorPermiso(request.user)
     Titulos=["Registrados","Activos","Sin autorizar","Enviados","Cancelados","Procede ajuste","No Procede ajuste"]
     datos=[]
@@ -144,7 +146,7 @@ def AjustePorTipoRegion(request,zona_id):
     for z in regiones:
         ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region') \
-                      .annotate(total = Count('Tienda')))
+                      .annotate(total = Sum('Monto')))
         ajuste=AjusteTipo(z.id,z.NombreRegion)
         tipo=TipoEspecifico("Registrados",ajustes[0]["total"])
         ajuste.AddTipo(tipo)
@@ -153,7 +155,7 @@ def AjustePorTipoRegion(request,zona_id):
         
         ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,Activo=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region') \
-                      .annotate(total = Count('Tienda')))        
+                      .annotate(total = Sum('Monto')))        
         tipo=TipoEspecifico("Activos",ajustes[0]["total"])
         ajuste.AddTipo(tipo)
         
@@ -161,7 +163,7 @@ def AjustePorTipoRegion(request,zona_id):
         
         ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,Enviado=False, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region') \
-                      .annotate(total = Count('Tienda')))        
+                      .annotate(total = Sum('Monto')))        
         tipo=TipoEspecifico("Enviados",ajustes[0]["total"])
         ajuste.AddTipo(tipo)
         
@@ -169,7 +171,7 @@ def AjustePorTipoRegion(request,zona_id):
         
         ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,Enviado=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region') \
-                      .annotate(total = Count('Tienda')))        
+                      .annotate(total = Sum('Monto')))        
         tipo=TipoEspecifico("Enviados",ajustes[0]["total"])
         ajuste.AddTipo(tipo)
         
@@ -177,7 +179,7 @@ def AjustePorTipoRegion(request,zona_id):
         
         ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,Activo=False, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region') \
-                      .annotate(total = Count('Tienda')))        
+                      .annotate(total = Sum('Monto')))        
         tipo=TipoEspecifico("Cancelados",ajustes[0]["total"])
         ajuste.AddTipo(tipo)
         
@@ -185,7 +187,7 @@ def AjustePorTipoRegion(request,zona_id):
         
         ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,ProcedeAjuste=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region') \
-                      .annotate(total = Count('Tienda')))        
+                      .annotate(total = Sum('Monto')))        
         tipo=TipoEspecifico("Procede ajuste",ajustes[0]["total"])
         ajuste.AddTipo(tipo)
         
@@ -193,7 +195,7 @@ def AjustePorTipoRegion(request,zona_id):
         
         ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,NoProcedeAjuste=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region') \
-                      .annotate(total = Count('Tienda')))        
+                      .annotate(total = Sum('Monto')))        
         tipo=TipoEspecifico("No Procede ajuste",ajustes[0]["total"])
         ajuste.AddTipo(tipo)
         
@@ -212,7 +214,7 @@ def AjustePorTipoRegion(request,zona_id):
     if fechafinal==datetime.max:
         fechafinal=None
     context = RequestContext(request, {
-        'Titulo':'Ajustes por tipo por region',        
+        'Titulo':'Ajustes por monto por region',        
         'Encabezado':'Region',
         'URL':None,
         'Titulos':Titulos,

@@ -4,9 +4,57 @@
     <link href="{% static "css/form.css" %}" rel="stylesheet">
     <link href="{% static "css/dark-hive/jquery-ui-1.10.4.custom.min.css" %}" rel="stylesheet">
     
-    <form method="post" action="/ajustes/RegistrarAjuste/">
+    <form method="post" action="/ajustes/RegistrarAjuste/" id="PostAjustes">
         {% csrf_token %}
         {{ forma.as_p }}
+        <div class="panel panel-default">
+        <div class="panel panel-heading">Clasificacion de ajuste</div>
+        <div class="panel-body">            
+            <div class="container">
+                <table id="tablaAjustes">
+                    <tr>
+                        <th>Factura:</th>
+                        <td><div><input id="id_Factura" type="text" class="obligatorio form-control"/></div></td>
+                        <th><label for="id_Tipo">Tipo:</label></th>
+                        <td><select id="id_Tipo" name="Tipo" class="form-control">
+                                <option value="1">Muebles</option>
+                                <option value="2">Ropa</option>
+                                <option value="3">Cajas</option>
+                                <option value="4">Tiempo Aire</option>
+                                <option value="5">Coppel.com</option>
+                                <option value="6">Negocios afiliados</option>
+                            </select>
+                        </td>
+                        <th>Tda donde se facturo:</th>
+                        <td><div><input id="id_TiendaAjuste" type="text" class="obligatorio form-control"/></div></td>
+                    </tr>
+                    <tr>
+                        <th>Fecha de Fact:</th>
+                        <td><div><input class="datepicker obligatorio form-control" id="id_Fecha" type="text"  readonly="readonly"/></div></td>
+                        <th>Monto:</th>
+                        <td><div><input id="id_MontoAjuste" type="text" class="obligatorio form-control"/></div></td>
+                    </tr>
+                </table>
+                <button type="button" class="btn" style="margin:10px 0px 10px 0px;" id="AgregarTabla">Agregar</button>
+                <table id="ajusteClasificados" name="ajusteClasificados" class="table table-striped table-hover" style="width:75%;">
+                    <thead>
+                        <tr  class="success header">
+                            <td style="display: none">Tipo id</td>
+                            <td>Factura</td>
+                            <td>Tipo</td>                            
+                            <td>Tienda</td>
+                            <td>Fecha</td>
+                            <td>Monto</td>
+                            <td>Seleccionar</td>
+                            <td>Eliminar</td>
+                        </tr>
+                        <input type="hidden" name="jsonTable" id="jsonTable" value="your value"/>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        </div>
+
         {%if error %}
             <script type="text/javascript">
                alert("Falta registrar datos obligatorios");
@@ -18,13 +66,87 @@
     
     <script type="text/javascript" src="{% static "js/jquery-ui-1.10.4.custom.min.js" %}"></script>
     <script type="text/javascript" src="{% static "js/datepickerUtil.js" %}"></script>
-
+    <script src="{% static "js/json2.min.js" %}"></script>
+    <script src="{% static "js/Utilerias.js" %}"></script>
+    
     <script type="text/javascript">
         $(function() {
             $("li").removeClass("active");
             $("#Ajustes").addClass("active");
                 
             dtpConfig();
+            $("#AgregarTabla").on("click",function(){
+                if (DatosCompletos("obligatorio")) {
+                    if (parseFloat($("#id_MontoAjuste").val())>0) {
+                        AgregoRenglon();   
+                    }
+                    else
+                    {                        
+                        $("#id_MontoAjuste").closest('div').addClass("has-error")
+                        alert("Debe capturar un monto mayor a cero");
+                        $("#id_MontoAjuste").focus();
+                    }
+                }                
+            });
+            $('#PostAjustes').submit(function() {
+                var correctoTodo=false;
+                if (HayDatosTabla()) {
+                    JsonizarTabla()
+                    correctoTodo=true;
+                }
+                else                
+                {
+                    alert("Debe capturar al menos una factura al ajuste");
+                    $("#id_Factura").focus();
+                }
+                return correctoTodo;
+            });
         });
+        JsonizarTabla=function(){
+            var datos={};
+            datos.datos=[];
+            $("#ajusteClasificados tr:gt(0)").each(function(){
+                var dato={};
+                dato.factura=$(this).closest("tr").find("td:eq(1)").text();
+                dato.tienda=$(this).closest("tr").find("td:eq(3)").text();
+                dato.fecha=$(this).closest("tr").find("td:eq(4)").text();
+                dato.monto=$(this).closest("tr").find("td:eq(5)").text();
+                dato.tipo=$(this).closest("tr").find("td:eq(0)").text();                
+                datos.datos.push(dato);                
+            });
+            $("#jsonTable").val(JSON.stringify(datos));
+        }
+        HayDatosTabla=function()
+        {            
+            return $("#ajusteClasificados tr").length>1;
+        }
+        
+        AgregoRenglon=function(){            
+            var row="<tr>";
+            row+="<td style='display:none'>"+$("#id_Tipo").val()+"</td>";            
+            row+="<td>"+$("#id_Factura").val()+"</td>";            
+            row+="<td>"+$("#id_Tipo :selected").text()+"</td>";            
+            row+="<td>"+$("#id_TiendaAjuste").val()+"</td>";            
+            row+="<td>"+$("#id_Fecha").val()+"</td>";
+            row+="<td>"+$("#id_MontoAjuste").val()+"</td>";
+            row+="<td><a href='#' onclick='EditoRenglon(this)'><span class='glyphicon glyphicon-ok'></span></a></td>";
+            row+="<td><a href='#' onclick='EliminoRenglon(this)'><span class='glyphicon glyphicon-remove'></span></a></td></tr>";
+            
+            $("#ajusteClasificados").append(row);
+            $("#tablaAjustes :input").val("");
+        };
+        EditoRenglon=function(td)
+        {
+            $("#id_Factura").val($(td).closest("tr").find("td:eq(1)").text());
+            $("#id_TiendaAjuste").val($(td).closest("tr").find("td:eq(3)").text());
+            $("#id_Fecha").val($(td).closest("tr").find("td:eq(4)").text());
+            $("#id_MontoAjuste").val($(td).closest("tr").find("td:eq(5)").text());
+            $("#id_Tipo option[value="+$(td).closest("tr").find("td:eq(0)").text()+"]").attr('selected','selected');
+            EliminoRenglon(td);
+        };
+        EliminoRenglon=function(td)
+        {
+            $(td).closest("tr").remove();            
+        };
     </script>
 {% endblock %}

@@ -2,7 +2,7 @@ from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader, Context
-from django.db.models.aggregates import Sum
+from django.db.models.aggregates import Sum, Count
 from ajustesLogica.models import RegionAuditoria, Ajuste
 from ajustesLogica.Config import Configuracion
 
@@ -26,6 +26,8 @@ def TendenciasAjustes(request):
         tda=request.POST["txtTienda"]
         region=request.POST["cmbRegion"]
         datos=None
+        PorNumeroAjustes=request.POST.get('NumAjustes', False)
+        
         try:
             fechainicial=request.POST["fechaInicial"]
             fechainicial=datetime.strptime(fechainicial,"%d/%m/%Y")
@@ -50,11 +52,18 @@ def TendenciasAjustes(request):
         if not error:
             daysDiff = fechafinal-fechainicial
             daysDiff = daysDiff.days
+            campo=""            
             if int(region)>0:
-                if tda>0:
-                    datos=Ajuste.objects.filter(Tienda=tda, Region__id=region, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion").values('FechaRecepcion').annotate(Cargo=Sum('Monto'))
+                if not PorNumeroAjustes:
+                    if tda>0:
+                        datos=Ajuste.objects.filter(Tienda=tda, Region__id=region, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion").values('FechaRecepcion').annotate(Cargo=Sum('Monto'))
+                    else:
+                        datos=Ajuste.objects.filter(Region__id=region, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion").values('FechaRecepcion').annotate(Cargo=Sum('Monto'))
                 else:
-                    datos=Ajuste.objects.filter(Region__id=region, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion").values('FechaRecepcion').annotate(Cargo=Sum('Monto'))
+                    if tda>0:
+                        datos=Ajuste.objects.filter(Tienda=tda, Region__id=region, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion").values('FechaRecepcion').annotate(Cargo=Count('FechaRecepcion'))
+                    else:
+                        datos=Ajuste.objects.filter(Region__id=region, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion").values('FechaRecepcion').annotate(Cargo=Count('FechaRecepcion'))
             else:
                 error=True
                 msg="Debe seleccionar una region"

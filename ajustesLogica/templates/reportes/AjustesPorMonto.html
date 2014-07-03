@@ -27,7 +27,7 @@
         <tr class="success">
             <td>{{Encabezado}}</td>
                 {% for t in Titulos%}
-                <td>{{t}}</td>
+                <td >{{t}}</td>
                 {% endfor %}
         </tr>
         
@@ -36,10 +36,10 @@
                 {% if URL %}
                         <td><b><a href="{{URL}}{{ r.ID }}/">{{ r.Desc }}</a></b></td>
                 {%else%}
-                        <td><b>{{ r.Desc }}</b></td>
+                        <td ><b>{{ r.Desc }}</b></td>
                 {%endif%}                
                 {% for t in r.Tipos%}                        
-                    <td >{{t.Total}}</td>
+                    <td class="moneda">{{t.Total}}</td>
                 {% endfor %}
         </tr>
 {% endfor %}
@@ -51,10 +51,10 @@
 </tr>
 </table>
 
-
 <script src="{% static "js/Utilerias.js" %}"></script>   
 <script type="text/javascript" src="{% static "js/jquery-ui-1.10.4.custom.min.js" %}"></script>
 <script type="text/javascript" src="{% static "js/datepickerUtil.js" %}"></script>
+<script type="text/javascript" src="{% static "js/Utilerias.js" %}"></script>
 
 <script type="text/javascript">
  $(function(){
@@ -64,6 +64,7 @@
         {%if Error%}
                 alert("{{MensajeError}}");
         {%endif%}
+        FormatoMoneda("moneda");
     });
 </script>
 {% endblock %}

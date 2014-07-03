@@ -1,0 +1,538 @@
+{% extends "base.html" %}
+{% block content %}
+    {% load staticfiles %}
+    {%if BusquedaAjuste %}
+    <link href="{% static "css/dark-hive/jquery-ui-1.10.4.custom.min.css" %}" rel="stylesheet">
+    <div class="panel panel-default">
+        <div class="panel panel-heading">Ver datos de ajuste</div>
+        <div class="panel-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <label for="txtTienda">Tienda</label>
+                        <input type="text" name="txtTienda" class="form-control obligatorio" id="txtTienda" placeholder="Numero de tienda" maxlength="5" value="{{Tienda}}" />
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="txtNumCte">Num. Cte.</label>
+                        <input type="text" name="txtNumCte" class="form-control" id="txtNumCte" maxlength="10" value="{{numcte}}"/>
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="txtFechaInicial">Fecha inicial</label>
+                        <input type="text" name="txtFechaInicial" class="form-control obligatorio datepicker" id="txtFechaInicial" placeholder="dd/mm/yyyy" maxlength="10" value="{{FechaInicial|date:"SHORT_DATE_FORMAT"}}"/>
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="txtFechaFinal">Fecha final</label>
+                        <input type="text" name="txtFechaFinal" class="form-control obligatorio datepicker" id="txtFechaFinal" placeholder="dd/mm/yyyy" maxlength="10" value="{{FechaFinal|date:"SHORT_DATE_FORMAT"}}"/>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary"  id="launchModal" style="margin-top: 10px;">
+                    Buscar
+                </button>
+            </div>
+        </div>
+    </div>
+    {%endif%}
+        <div class="panel panel-default">
+        <div class="panel panel-heading">Ajuste</div>
+        <div class="panel-body">            
+            <div class="container">
+                <table id="ajusteSeleccionado" class="table table-striped table-hover" style="width:95%;">
+                    <thead>
+                    <tr  class="success header"> 
+                        <td style="display: none">id</td>
+                        <td>NumCte</td>
+                        <td>Tienda</td>
+                        <td>Fecha Recepcion</td>
+                        <td>NumEmpleado</td>
+                        <td>NomEmpleado</td>
+                        <td>NumCuentas</td>
+                        <td>Monto</td>
+                        <td>Procede</td>
+                        <td>Estatus</td>                        
+                    </tr>
+                    </thead>
+                </table>
+                
+                <table id="CuentasAjuste" name="ajusteClasificados" class="table table-striped table-hover" style="width:95%;">
+                    <thead>
+                        <tr  class="success header">                            
+                            <td>Factura</td>
+                            <td>Centro</td>                            
+                            <td>Tienda</td>
+                            <td>Fecha</td>
+                            <td>Monto</td>
+                        </tr>
+                        <input type="hidden" name="jsonTable" id="jsonTable" value="your value"/>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default" id="panelEmpleadosCierre" >
+        <div class="panel panel-heading">Datos de finalizacion de ajustes</div>
+        <div class="panel-body">            
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-3">
+                            <label>Estatus</label>
+                            <input type="text" name="txtObservaciones" class="form-control" id="txtEstatus" placeholder="Estatus" maxlength="5000" />
+                    </div>
+                    <div class="col-sm-8">
+                            <label for="txtObservaciones">Observaciones</label>
+                            <input type="text" name="txtObservaciones" class="form-control" id="txtObservaciones" placeholder="Observaciones" maxlength="5000" />
+                    </div>
+                    
+                    <table id="EmpleadosInvolucrados" class="table table-striped table-hover" style="width:95%;margin-top:70px;">
+                                    <thead>
+                                        <tr  class="success header">
+                                            <td>Num. Emp.</td>
+                                            <td>Nombre Emp.</td>                            
+                                            <td>Estatus</td>
+                                        </tr>
+                                    </thead>
+                    </table>
+                </div>
+            </div>
+        </div>        
+    </div>
+    
+    <div class="panel panel-default" id="panelSA" >
+        <div class="panel panel-heading">Segimiento de SA</div>
+        <div class="panel-body">            
+            <div class="container">
+                <div class="row">                   
+                    <table id="SeguimientoSA" class="table table-striped table-hover" style="width:95%;">
+                        <thead>
+                            <tr  class="success header">
+                                <td>Folio</td>
+                                <td>Destinatario</td>                            
+                                <td>Puesto</td>
+                                <td>Tema</td>
+                                <td>Fecha</td>
+                            </tr>                            
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>        
+    </div>
+    
+    <div class="panel panel-default" id="panelEvidencia" >
+        <div class="panel panel-heading">Evidencia</div>
+        <div class="panel-body">            
+            <div class="container">
+                <div class="row">                
+                    <div class="col-md-8">                    
+                        <ul id="evidencia" class="list-group">
+                            <li > <a href="#" class="list-group-item active">Evidencia anexada</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="ajuste" name="ajuste">
+    </div>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog"  style="width:auto;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Ajustes encontrados</h4>
+      </div>
+      <div class="modal-body">
+            <table id="tablaAjustes" class="table table-striped table-hover" >
+                <thead>
+                <tr  class="success header">
+                    <td style="display: none">id</td>
+                    <td>NumCte</td>
+                    <td>Tienda</td>
+                    <td>Fecha Recepcion</td>
+                    <td>NumEmpleado</td>
+                    <td>NomEmpleado</td>
+                    <td>NumCuentas</td>
+                    <td>Monto</td>
+                    <td>Procede</td>
+                    <td>Estatus</td>                     
+                    <td>Selec.</td>
+                </tr>
+                </thead>
+                <tr>
+                    
+                </tr>
+            </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" id="GuardarOtro">Seleccionar</button>        
+      </div>
+    </div>
+  </div>
+</div>
+<!-- FIN Modal -->
+
+<script src="{% static "js/Utilerias.js" %}"></script>
+<script src="{% static "js/json2.min.js" %}"></script>
+<script src="{% static "js/jquery.form.js" %}"></script>
+<script type="text/javascript" src="{% static "js/jquery-ui-1.10.4.custom.min.js" %}"></script>
+<script type="text/javascript" src="{% static "js/datepickerUtil.js" %}"></script>
+
+
+<script type="text/javascript">
+    var renglon=null;
+    $(function(){
+        $("li").removeClass("active");
+        $("#Ajustes").addClass("active");
+                
+        dtpConfig();
+        $("#launchModal").on("click",function(){
+            if(DatosCompletos())
+            {
+                $('#myModal').modal('show');
+                BuscoAjustes();
+            }
+        });
+       
+        /////////////////////////////|||)
+        ///////MANEJO DE MODAL///////|||)
+        /////////////////////////////|||)        
+        $('#myModal').on('hidden.bs.modal', function () {
+            var row=$(".selec:checked").parent().parent().html();            
+            $("#ajusteSeleccionado tr:gt(0)").remove();            
+            if (row!=null) {
+                $("#ajusteSeleccionado").append("<tr>"+row+"</tr>");
+                $("#ajusteSeleccionado:last").find("td:last").remove();
+                
+                PostCargaAjuste();
+            }
+        })
+        
+        {% if not BusquedaAjuste %}
+            BuscoAjusteEspecifico();
+        {% endif %}
+    });
+    BuscoDatosAjuste =function()
+    {        
+        var ajuste={
+                    "id":$("#ajuste").val()
+                };
+        var Datos={
+            "Ajustes":ajuste
+        };
+        /////////////////////////////|||)
+        ///////ENVIO DATA AJAX///////|||)
+        /////////////////////////////|||)
+        var ajax = {
+                type: "POST",
+                async: true,
+                dataType: "JSON",
+                url: "/ajustes/ajax/BuscarDatosAjuste/",
+                data: JSON.stringify(Datos),
+                error: function (xhr, status, error) {
+                    alert("Ocurrio un error: " + error + ":" + eval(xhr).responseText);
+                },
+                success: function (data) {                    
+                    d=eval(data);
+                    $("#tablaAjustes tr:gt(0)").remove();                    
+                    if (d.error) {                        
+                        alert(d.mensaje);
+                        $('#myModal').modal('toggle');
+                    }
+                    else
+                    {
+                        AgregoCierre(d);
+                        //AgregoNotas(d);                        
+                    }
+                }
+            };
+            $.ajax(ajax);
+        
+    }
+    BuscoAjusteEspecifico =function()
+    {
+        var ajuste={
+                    "id":{{id}}
+                }
+        var Datos={
+            "Ajustes":ajuste
+        };
+        /////////////////////////////|||)
+        ///////ENVIO DATA AJAX///////|||)
+        /////////////////////////////|||)
+        var ajax = {
+                type: "POST",
+                async: true,
+                dataType: "JSON",
+                url: "/ajustes/ajax/BuscarAjuste/",
+                data: JSON.stringify(Datos),
+                error: function (xhr, status, error) {
+                    alert("Ocurrio un error: " + error + ":" + eval(xhr).responseText);
+                },
+                success: function (data) {                    
+                    d=eval(data);
+                    $("#tablaAjustes tr:gt(0)").remove();
+                    if (d.error) {                        
+                        alert(d.mensaje);
+                        $('#myModal').modal('toggle');
+                    }
+                    else
+                    {
+                        AgregoAjuste(d,"ajusteSeleccionado");
+                        $("#ajuste").val({{id}});
+                        $("#ajusteSeleccionado:last").find("td:last").remove();
+                        PostCargaAjuste();
+                    }
+                }
+            };
+            $.ajax(ajax);
+        
+    }
+    BuscoAjustes= function(){        
+        var ajuste={
+                    "tienda":$("#txtTienda").val(),
+                    "numcte":$("#txtNumCte").val(),
+                    "centro":$("#cmbCentro :selected").val(),
+                    "fechaInicial":$("#txtFechaInicial").val(),
+                    "fechaFinal":$("#txtFechaFinal").val()
+                }
+        var Datos={
+            "Ajustes":ajuste
+        };
+        /////////////////////////////|||)
+        ///////ENVIO DATA AJAX///////|||)
+        /////////////////////////////|||)
+        var ajax = {
+                type: "POST",
+                async: true,
+                dataType: "JSON",
+                url: "/ajustes/ajax/BuscarTodosLosAjustes/",
+                data: JSON.stringify(Datos),
+                error: function (xhr, status, error) {
+                    alert("Ocurrio un error: " + error + ":" + eval(xhr).responseText);
+                },
+                success: function (data) {                    
+                    d=eval(data);
+                    $("#tablaAjustes tr:gt(0)").remove();
+                    if (d.error) {                        
+                        alert(d.mensaje);
+                        $('#myModal').modal('toggle');
+                    }
+                    else
+                    {
+                        AgregoAjuste(d,"tablaAjustes");
+                    }
+                }
+            };
+            $.ajax(ajax);
+    }
+    
+    AgregoAjuste=function (d,tablaID){
+                        ajustes=eval(d.ajustes);
+                        $.each(ajustes, function(index, value) {
+                            var tabla="<tr><td style='display: none'>"+
+                                value.pk
+                                +"</td><td>"+
+                                value.fields.NumCte
+                                +"</td><td>"+
+                                value.fields.Tienda
+                                +"</td><td>"+
+                                value.fields.FechaRecepcion
+                                +"</td><td>"+
+                                value.fields.NumEmpleado
+                                +"</td><td>"+
+                                value.fields.NomEmpleado                                
+                                +"</td><td>"+
+                                value.fields.NumCuentas
+                                +"</td><td>"+
+                                value.fields.Monto
+                                +"</td><td>";
+                                if (value.fields.Finalizado) {
+                                    if (value.fields.ProcedeAjuste)
+                                    {
+                                        tabla+="Procede Ajuste";
+                                    }
+                                    else{
+                                        tabla+="No Procede Ajuste";
+                                    }                                
+                                }
+                                else{
+                                    tabla+="No finalizado"
+                                }
+                                tabla+="</td><td>";
+                                if (value.fields.Activo){
+                                    if (value.fields.Finalizado){
+                                        tabla+="Finalizado";
+                                    }
+                                    else{
+                                        if (value.fields.Enviado){
+                                            tabla+="Enviado";
+                                        }
+                                        else{
+                                           tabla+="Activo";
+                                        }
+                                    }
+                                }
+                                else{
+                                    tabla+="Cancelado";
+                                }
+                                tabla+="</td><td><input type='checkbox' class='selec'></td></tr>";
+                            $("#"+tablaID).append(tabla);
+                            $(".selec").change(function(){
+                                    $(".selec").not(this).attr("checked", false);
+                                });
+                        });
+                }
+    AgregoNotas=function (d){
+                        $("#CuentasAjuste tr:gt(0)").remove();
+                        notas=eval(d.cuentas);
+                        $.each(notas, function(index, value) {
+                            var tabla="<tr><td>"+
+                                value.fields.Factura
+                                +"</td><td>"+
+                                value.fields.Tipo
+                                +"</td><td>"+
+                                value.fields.Tienda
+                                +"</td><td>"+
+                                value.fields.Fecha
+                                +"</td><td>"+
+                                value.fields.Monto
+                                +"</td>";                                                   
+                            $("#CuentasAjuste").append(tabla);
+                        });
+                        $("#CuentasAjuste tr:gt(0)").find("td:eq(1)").each(function(){
+                                var tipo=$(this).text();
+                                var _this=this;
+                                $.each(d.TipoCentroCuenta,function(index,value){                                    
+                                    if (tipo==value[0]) {
+                                        $(_this).text(value[1]);
+                                    }                                    
+                                });
+                            });
+                        
+                };
+    AgregoCierre=function(d){                        
+                        $("#EmpleadosInvolucrados tr:gt(0)").remove();
+                        cierre=eval(d.datosCierre);
+                        empleados=eval(d.empleados);                        
+                        $("#txtEstatus").val(cierre[0].fields.Estatus);
+                        $("#txtObservaciones").val(cierre[0].fields.Observaciones);
+                        
+                        $.each(d.EstatusCierre,function(index,value){                                    
+                            if ($("#txtEstatus").val()==value[0]) {
+                                $("#txtEstatus").val(value[1]);
+                            }                                    
+                        });
+                        
+                        $.each(empleados, function(index, value) {
+                            var tabla="<tr><td>"+
+                                value.fields.NumEmpleado
+                                +"</td><td>"+
+                                value.fields.NomEmpleado
+                                +"</td><td>"+
+                                value.fields.EstatusLaboral
+                                +"</td>";                                                   
+                            $("#EmpleadosInvolucrados").append(tabla);
+                        });
+                        $("#EmpleadosInvolucrados tr:gt(0)").find("td:eq(2)").each(function(){
+                                var tipo=$(this).text();
+                                var _this=this;
+                                $.each(d.EstatusLaboral,function(index,value){                                    
+                                    if (tipo==value[0]) {
+                                        $(_this).text(value[1]);
+                                    }                                    
+                                });
+                            });
+                    };
+    /////////////////////////////|||)
+    ///////MANEJO POST ENVIO/////|||)
+    /////////////////////////////|||)     
+    PostCargaAjuste=function()
+        {
+            $("#ajuste").val( $("#ajusteSeleccionado tr:eq(1)> td:eq(0)").text());
+            $("#panelEvidencia").show("display");
+            ObtengoEvidencias();
+            BuscoDatosAjuste();
+            ObtengoSAs();
+        };
+    /////////////////////////////|||)
+    ///////BUSQUEDA DE AJUSTE////|||)
+    /////////////////////////////|||)
+    ObtengoEvidencias=function(){
+        var ajax = {
+                type: "POST",
+                async: true,
+                dataType: "JSON",
+                url: "/ajustes/ajax/BuscarEvidencias/",
+                data: "ajuste="+$("#ajuste").val(),
+                error: function (xhr, status, error) {
+                    alert("Ocurrio un error: " + error + ":" + eval(xhr).responseText);
+                },
+                success: function (data) {                    
+                    d=eval(data);                    
+                    if (d.error) {                        
+                        alert(d.mensaje);
+                        $('#myModal').modal('toggle');
+                    }
+                    else
+                    {
+                        $("#evidencia li:not(:first)").remove();
+                        for (i=0;i<d.ajustes.length;i++) {
+                            $("#evidencia").append("<li class='list-group-item'><a href='{{ MEDIA_URL }}"+d.ajustes[i]+"'>"+d.ajustes[i]+"</a></li>");    
+                        }                        
+                    }
+                }
+            };
+            $.ajax(ajax);
+    };
+    /////////////////////////////|||)
+    ///////BUSQUEDA DE S.A.  ////|||)
+    /////////////////////////////|||)
+    ObtengoSAs=function(){            
+                var ajuste={
+                    "id":$("#ajuste").val()
+                }
+                var Datos={
+                    "Ajustes":ajuste
+                };
+                /////////////////////////////|||)
+                ///////ENVIO DATA AJAX///////|||)
+                /////////////////////////////|||)
+                var ajax = {
+                        type: "POST",
+                        async: true,
+                        dataType: "JSON",
+                        url: "/ajustes/ajax/BuscarSAs/",
+                        data: JSON.stringify(Datos),
+                        error: function (xhr, status, error) {
+                            alert("Ocurrio un error: " + error + ":" + eval(xhr).responseText);
+                        },
+                        success: function (data) {                    
+                            d=eval(data);                            
+                            $("#SeguimientoSA tr:gt(0)").remove();
+                            if (d.error) {                        
+                                alert(d.mensaje);                               
+                            }
+                            else
+                            {
+                                sas=eval(d.sas);                                
+                                $.each(sas, function(index, value) {
+                                    var tabla="<tr><td>"+
+                                        value.fields.Folio
+                                        +"</td><td>"+
+                                        value.fields.Destinatario
+                                        +"</td><td>"+
+                                        value.fields.Puesto
+                                        +"</td><td>"+
+                                        value.fields.Tema
+                                        +"</td><td>"+
+                                        value.fields.Fecha                                        
+                                        +"</td></tr>";
+                                    $("#SeguimientoSA").append(tabla);
+                                });                                    
+                            }
+                        }
+                    };
+                    $.ajax(ajax); 
+    };
+</script>
+{% endblock %}
