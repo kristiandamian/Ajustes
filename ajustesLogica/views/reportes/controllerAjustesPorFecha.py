@@ -47,7 +47,7 @@ def AjustesPorFecha(request):
                 datos=Ajuste.objects.filter(Tienda=tda, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion","Tienda")
             else:
                 if int(region)>0:
-                        datos=Ajuste.objects.filter(Region__id=region, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion","Tienda")
+                    datos=Ajuste.objects.filter(Region__id=region, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion","Tienda")
                 else:
                     datos=Ajuste.objects.filter(FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion","Tienda")
                 

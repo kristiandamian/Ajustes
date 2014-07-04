@@ -28,7 +28,9 @@ class ZonaAuditoria(models.Model):
     
     def __unicode__(self):
         return self.NombreZona+"-"+self.GerenteZona
-
+    class Meta:        
+        ordering =['NombreZona']
+        
 class RegionAuditoriaManager(models.Manager):
     def PorPermiso(self, user):
         usuario=UsuarioAcceso.objects.filter(Usuario=user)
@@ -55,19 +57,8 @@ class RegionAuditoria(models.Model):
     def __unicode__(self):
         return self.NombreRegion + "-" + self.GerenteRegion
     
-#class AjusteManager(models.Manager):
-#    def PorPermiso(self, user):
-#        usuario=UsuarioAcceso.objects.filter(Usuario=user)
-#        if usuario.__len__()==0 or  user.is_superuser or usuario[0].Region==None:#no hay un usuario o ese usuario es "superusuario" o tiene acceso a nivel nacional
-#           return super(AjusteManager,self).get_query_set()
-#        tdas=[]
-#        for u in usuario:                          
-#            if u.Zona!=None and u.Region!=None:
-#                tdas+=ZonaAuditoria.objects.filter(Zona__Region=u.Region).values_list("Tienda",flat=True)
-#            else:
-#                if u.Zona!=None:                
-#                    tdas+=ZonaAuditoria.objects.filter(id=u.Zona__id).values_list("Tienda",flat=True)            
-#        return super(AjusteManager,self).get_query_set().filter(Tienda__in = tdas)
+    class Meta:        
+        ordering =['NombreRegion']
 
 class Ajuste(models.Model):
     Region = models.ForeignKey(RegionAuditoria)
@@ -184,13 +175,6 @@ class Autorizacion(models.Model):
         permissions = (
             ("Puede_Autorizar", "Puede autorizar ajustes"),
         )
-
-class CorreoEnviado(models.Model):
-    De=models.EmailField(max_length=100)
-    Para=models.EmailField(max_length=100)
-    Content=models.CharField(max_length=5000)
-    adjuntos = models.ManyToManyField(ImagenAjuste)
-    FechaRegistroSistema=models.DateTimeField(auto_now=True)
     
 class UsuarioAcceso(models.Model):
     Usuario=models.ForeignKey(User)
@@ -204,6 +188,7 @@ class UsuarioAcceso(models.Model):
             return self.Usuario.username
     class Meta:
         verbose_name_plural='UsuariosAccesos'
+        ordering =['Zona__NombreZona']        
         
 class UsuarioAccesoAdmin(admin.ModelAdmin):
     list_filter =('Zona__NombreZona',)

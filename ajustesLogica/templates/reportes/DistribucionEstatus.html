@@ -2,8 +2,9 @@
 {% block content %}
     {% load staticfiles %}
     <link href="{% static "css/dark-hive/jquery-ui-1.10.4.custom.min.css" %}" rel="stylesheet">
+    <link href="{% static "css/jqplot/jquery.jqplot.min.css" %}" rel="stylesheet">
 
-    <h3>Grafica de tendencia de ajustes</h3>
+    <h3>Grafica de distribuci&oacute;n de estatus de ajustes</h3>
     <div>
         <form  method="post" enctype="multipart/form-data">
             {% csrf_token %}
@@ -11,7 +12,7 @@
                 <div class="row">
                     <div class="col-sm-2">
                             <label for="txtTienda">Tienda</label>
-                            <input type="text" name="txtTienda" class="form-control" id="txtTienda" placeholder="Numero de tienda" maxlength="5" 
+                            <input type="text" name="txtTienda" class="form-control" id="txtTienda" placeholder="Numero de tienda" maxlength="5"
                                    {%if Tienda > 0 %}
                                         value="{{Tienda}}"
                                     {% endif %}/>
@@ -55,17 +56,23 @@
             </div>
         </form>
         
-        <div id="chart1" style=" position: relative;" class="jqplot-target">
+        <div id="chart1">
+        </div>
+        <div id="chart2">
         </div>
     </div>
-        
+
     <script type="text/javascript" src="{% static "js/jqplot/jquery.jqplot.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/jqplot/jqplot.barRenderer.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/jqplot/jqplot.categoryAxisRenderer.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/jqplot/jqplot.pointLabels.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/jqplot/jqplot.dateAxisRenderer.min.js"%}"></script>
+    <script type="text/javascript" src="{% static "js/jqplot/jqplot.pieRenderer.min.js" %}"></script>    
     <script type="text/javascript" src="{% static "js/jquery-ui-1.10.4.custom.min.js" %}"></script>
     <script type="text/javascript" src="{% static "js/datepickerUtil.js" %}"></script>
+
+    <script type="text/javascript" src="{% static "js/jqplot/jqplot.dateAxisRenderer.min.js"%}"></script>
+    <script type="text/javascript" src="{% static "js/jqplot/jqplot.canvasTextRenderer.min.js"%}"></script>
+    <script type="text/javascript" src="{% static "js/jqplot/jqplot.canvasAxisTickRenderer.min.js"%}"></script>
+    <script type="text/javascript" src="{% static "js/jqplot/jqplot.categoryAxisRenderer.min.js"%}"></script>
+    <script type="text/javascript" src="{% static "js/jqplot/jqplot.barRenderer.min.js"%}"></script>
+
 
     <script type="text/javascript">
         $(function(){
@@ -93,28 +100,41 @@
        });
         
         function GeneroGrafica(){
-            dias=7;
-            {% if DiasEntreFechas %}                
-                dias=1;
-            {% endif %}
             var line1 =  [
                             {%for d in Datos%}
-                                ['{{d.0|date:"Y-m-d"}}',{{d.1}}],
+                                ['{{d.0}}',{{d.1}}],
                             {%endfor%}
                           ];
-  
+            
             var plot1 = $.jqplot('chart1', [line1], {
-                title:'Tendencia de ajustes',
-                axes:{
-                    xaxis:{
-                        renderer:$.jqplot.DateAxisRenderer, 
-                        tickOptions:{formatString:'%#d %b  %y'},
-                        
-                        tickInterval:dias+' day'//'1 month'
-                        }
-                    },
-                series:[{lineWidth:4, }]
-            });
+                            seriesDefaults: {
+                                // Make this a pie chart.
+                                renderer: jQuery.jqplot.PieRenderer, 
+                                rendererOptions: {
+                                  // Put data labels on the pie slices.
+                                  // By default, labels show the percentage of the slice.
+                                  showDataLabels: true
+                                }
+                              }, 
+                              legend: { show:true, location: 'e' }
+                            });
+            
+            var plot2 = $.jqplot('chart2', [line1], {
+                            //title: 'Concern vs. Occurrance',
+                            series:[{renderer:$.jqplot.BarRenderer}],
+                            axesDefaults: {
+                                tickRenderer: $.jqplot.CanvasAxisTickRenderer ,
+                                tickOptions: {
+                                  angle: -50,
+                                  fontSize: '10pt'
+                                }
+                            },
+                            axes: {
+                              xaxis: {
+                                renderer: $.jqplot.CategoryAxisRenderer
+                              }
+                            }
+                          });
       }
     </script>    
 {% endblock %}

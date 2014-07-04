@@ -23,8 +23,10 @@ from ajustesLogica.views.reportes.controllerAjustePorTipo import AjustePorTipoZo
 from ajustesLogica.views.reportes.controllerAjustePorMonto import AjustePorMontoZona, AjustePorMontoRegion
 from ajustesLogica.views.reportes.controllerAjustePorClasificacionZona import AjustePorClasificacionZona, AjustePorClasificacionRegion
 from ajustesLogica.views.reportes.controllerDistribucionClasificaciones import DistribucionClasificacion
+from ajustesLogica.views.reportes.controllerDistribucionEstatus import DistribucionEstatus
+from ajustesLogica.views.reportes.controllerDistribucionCentros import DistribucionCentro
 from ajustesLogica.views.SeguimientoSA.controllerSA import SeguimientoSA
-from ajustesLogica.models import UsuarioAcceso, RegionAuditoria, ZonaAuditoria, CorreoEnviado, ClasificacionAjuste
+from ajustesLogica.models import UsuarioAcceso, RegionAuditoria, ZonaAuditoria, ClasificacionAjuste
 from ajustesLogica.models import UsuarioAccesoAdmin
 
 ############################################################################################################
@@ -36,7 +38,6 @@ admin.autodiscover()                                                            
 admin.site.register(UsuarioAcceso,UsuarioAccesoAdmin)
 admin.site.register(ZonaAuditoria)
 admin.site.register(RegionAuditoria)
-admin.site.register(CorreoEnviado)
 admin.site.register(ClasificacionAjuste)
 
 ############################################################################################################
@@ -96,6 +97,9 @@ urlpatterns = patterns('',
     url(r'^ajustes/AjustePorClasificacionZona/$',AjustePorClasificacionZona),
     url(r'^ajustes/AjustePorClasificacionRegion/(?P<zona_id>\d+)/$',AjustePorClasificacionRegion),
     url(r'^ajustes/DistribucionClasificacion/$',DistribucionClasificacion),
+    url(r'^ajustes/DistribucionEstatus/$',DistribucionEstatus),
+    url(r'^ajustes/DistribucionCentro/$',DistribucionCentro),
+    
 ############################################################################################################
 ####  LIGA PARA LOS ARCHIVOS SUBIDOS (EVIDENCIAS)                                                      ####
 ############################################################################################################    
