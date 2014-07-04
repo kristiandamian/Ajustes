@@ -3,12 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader, Context
 from django.db.models.aggregates import Sum, Count
-from ajustesLogica.models import RegionAuditoria, Ajuste
+from ajustesLogica.models import RegionAuditoria, Ajuste, CierreAjuste
 from ajustesLogica.Config import Configuracion
 
 @login_required(login_url=Configuracion.LOGIN_URL)
-def TendenciasAjustes(request):
-    template = loader.get_template('reportes/GraficaTendencias.html')
+def DistribucionClasificacion(request):
+    template = loader.get_template('reportes/DistribucionClasificaciones.html')
     regiones=RegionAuditoria.objects.PorPermiso(request.user).order_by("NombreRegion")
     
     resultados=[]
@@ -18,8 +18,7 @@ def TendenciasAjustes(request):
     fechainicial=""
     fechafinal=""
     error=False
-    msg=""
-    daysDiff=Configuracion.DAYS_DIFF
+    msg=""    
     PorNumeroAjustes=False
     if request.method == 'POST':
         generar=True
@@ -50,25 +49,23 @@ def TendenciasAjustes(request):
             error=True
             msg ="La fecha final debe ser mayor a la fecha inicial"
         if not error:
-            daysDiff = fechafinal-fechainicial
-            daysDiff = daysDiff.days
             campo=""            
             if int(region)>0:
                 if not PorNumeroAjustes:
                     if tda>0:
-                        datos=Ajuste.objects.filter(Tienda=tda, Region__id=region, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion").values('FechaRecepcion').annotate(Cargo=Sum('Monto'))
+                        datos=CierreAjuste.objects.filter(AjusteAfectado__Tienda=tda, AjusteAfectado__Region__id=region, AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Clasificacion__Clasificacion").values('Clasificacion__Clasificacion').annotate(Cargo=Sum('AjusteAfectado__Monto'))
                     else:
-                        datos=Ajuste.objects.filter(Region__id=region, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion").values('FechaRecepcion').annotate(Cargo=Sum('Monto'))
+                        datos=CierreAjuste.objects.filter(AjusteAfectado__Region__id=region, AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Clasificacion__Clasificacion").values('Clasificacion__Clasificacion').annotate(Cargo=Sum('AjusteAfectado__Monto'))
                 else:
                     if tda>0:
-                        datos=Ajuste.objects.filter(Tienda=tda, Region__id=region, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion").values('FechaRecepcion').annotate(Cargo=Count('FechaRecepcion'))
+                        datos=CierreAjuste.objects.filter(AjusteAfectado__Tienda=tda, AjusteAfectado__Region__id=region, AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Clasificacion__Clasificacion").values('Clasificacion__Clasificacion').annotate(Cargo=Count('Clasificacion__Clasificacion'))
                     else:
-                        datos=Ajuste.objects.filter(Region__id=region, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion").values('FechaRecepcion').annotate(Cargo=Count('FechaRecepcion'))
+                        datos=CierreAjuste.objects.filter(AjusteAfectado__Region__id=region, AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Clasificacion__Clasificacion").values('Clasificacion__Clasificacion').annotate(Cargo=Count('Clasificacion__Clasificacion'))
             else:
                 error=True
                 msg="Debe seleccionar una region"
             for d in datos:
-                resultados.append((d['FechaRecepcion'],d['Cargo']))
+                resultados.append((d['Clasificacion__Clasificacion'],d['Cargo']))
                 
     context=RequestContext(request, {
                 'regiones':regiones,
@@ -77,7 +74,6 @@ def TendenciasAjustes(request):
                 'FechaInicial':fechainicial,
                 'FechaFinal':fechafinal,
                 'Tienda':tda,
-                'DiasEntreFechas':daysDiff<Configuracion.MAX_DAYS_DIFF,
                 'Error':error,
                 'MensajeError':msg,
                 'Region':int(region),

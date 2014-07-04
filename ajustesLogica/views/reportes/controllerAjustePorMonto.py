@@ -187,7 +187,7 @@ def AjustePorMontoRegion(request,zona_id):
         
         ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,ProcedeAjuste=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region') \
-                      .annotate(total = Sum('Monto')))        
+                      .annotate(total = Sum('Monto')))
         tipo=TipoEspecifico("Procede ajuste",ajustes[0]["total"])
         ajuste.AddTipo(tipo)
         
@@ -195,7 +195,7 @@ def AjustePorMontoRegion(request,zona_id):
         
         ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,NoProcedeAjuste=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region') \
-                      .annotate(total = Sum('Monto')))        
+                      .annotate(total = Sum('Monto')))
         tipo=TipoEspecifico("No Procede ajuste",ajustes[0]["total"])
         ajuste.AddTipo(tipo)
         

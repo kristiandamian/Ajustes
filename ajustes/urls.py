@@ -22,6 +22,7 @@ from ajustesLogica.views.reportes.controllerAjustesPorFecha import AjustesPorFec
 from ajustesLogica.views.reportes.controllerAjustePorTipo import AjustePorTipoZona, AjustePorTipoRegion
 from ajustesLogica.views.reportes.controllerAjustePorMonto import AjustePorMontoZona, AjustePorMontoRegion
 from ajustesLogica.views.reportes.controllerAjustePorClasificacionZona import AjustePorClasificacionZona, AjustePorClasificacionRegion
+from ajustesLogica.views.reportes.controllerDistribucionClasificaciones import DistribucionClasificacion
 from ajustesLogica.views.SeguimientoSA.controllerSA import SeguimientoSA
 from ajustesLogica.models import UsuarioAcceso, RegionAuditoria, ZonaAuditoria, CorreoEnviado, ClasificacionAjuste
 from ajustesLogica.models import UsuarioAccesoAdmin
@@ -94,6 +95,7 @@ urlpatterns = patterns('',
     url(r'^ajustes/AjustePorMontoRegion/(?P<zona_id>\d+)/$',AjustePorMontoRegion),
     url(r'^ajustes/AjustePorClasificacionZona/$',AjustePorClasificacionZona),
     url(r'^ajustes/AjustePorClasificacionRegion/(?P<zona_id>\d+)/$',AjustePorClasificacionRegion),
+    url(r'^ajustes/DistribucionClasificacion/$',DistribucionClasificacion),
 ############################################################################################################
 ####  LIGA PARA LOS ARCHIVOS SUBIDOS (EVIDENCIAS)                                                      ####
 ############################################################################################################    
