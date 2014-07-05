@@ -186,6 +186,7 @@ class UsuarioAcceso(models.Model):
             return self.Usuario.username +"-"+ self.Region.NombreRegion
         else:
             return self.Usuario.username
+    
     class Meta:
         verbose_name_plural='UsuariosAccesos'
         ordering =['Zona__NombreZona']        
