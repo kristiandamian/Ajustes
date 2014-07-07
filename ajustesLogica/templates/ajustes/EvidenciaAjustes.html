@@ -26,7 +26,6 @@
                         <input type="text" name="txtFechaFinal" class="form-control obligatorio datepicker" id="txtFechaFinal" placeholder="dd/mm/yyyy" maxlength="10" value="{{FechaFinal|date:"SHORT_DATE_FORMAT"}}"/>
                     </div>
                 </div>
-                
                 <button class="btn btn-primary"  id="launchModal" style="margin-top: 10px;">
                     Buscar
                 </button>
@@ -67,8 +66,7 @@
                     <p>
                     {{ form.docfile.errors }}
                     {{ form.docfile }}
-                    </p>
-                    
+                    </p>                    
                     <input type="hidden" id="ajuste" name="ajuste">
                     <input type="submit" value="Upload"  class="btn btn-primary"/>
                 </form>
@@ -106,8 +104,7 @@
                     <td>Selec.</td>
                 </tr>
                 </thead>
-                <tr>
-                    
+                <tr>                    
                 </tr>
             </table>
       </div>
@@ -133,8 +130,7 @@
                 
         dtpConfig();
         $("#launchModal").on("click",function(){
-            if(DatosCompletos())
-            {
+            if(DatosCompletos()){
                 $('#myModal').modal('show');
                 BuscoAjustes();
             }
@@ -201,8 +197,7 @@
                         alert(d.mensaje);
                         $('#myModal').modal('toggle');
                     }
-                    else
-                    {                        
+                    else{                        
                         AgregoAjuste(d,"ajusteSeleccionado");
                         $("#ajusteSeleccionado:last-child").find("td:last").remove();
                         PostCargaAjuste();
@@ -242,8 +237,7 @@
                         alert(d.mensaje);
                         $('#myModal').modal('toggle');
                     }
-                    else
-                    {
+                    else{
                         AgregoAjuste(d,"tablaAjustes");
                     }
                 }
@@ -278,8 +272,7 @@
     /////////////////////////////|||)
     ///////MANEJO POST ENVIO/////|||)
     /////////////////////////////|||)     
-    PostCargaAjuste=function()
-        {
+    PostCargaAjuste=function() {
             {% if not BusquedaAjuste %}
                 $("#ajuste").val({{id}});
             {%else%}
@@ -302,18 +295,17 @@
                 error: function (xhr, status, error) {
                     alert("Ocurrio un error: " + error + ":" + eval(xhr).responseText);
                 },
-                success: function (data) {                    
-                    d=eval(data);                    
-                    if (d.error) {                        
+                success: function (data) {
+                    d=eval(data);
+                    if (d.error) {
                         alert(d.mensaje);
                         $('#myModal').modal('toggle');
                     }
-                    else
-                    {
+                    else {
                         $("#evidencia li:not(:first)").remove();
                         for (i=0;i<d.ajustes.length;i++) {
                             $("#evidencia").append("<li class='list-group-item'><a href='{{ MEDIA_URL }}"+d.ajustes[i]+"'>"+d.ajustes[i]+"</a></li>");    
-                        }                        
+                        }
                     }
                 }
             };

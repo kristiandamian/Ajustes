@@ -32,7 +32,7 @@
     </div>
     {% load staticfiles %} 
     <script src="{% static "js/json2.min.js" %}"></script>
-
+    <script src="{% static "js/Utilerias.js" %}"></script>
     <script type="text/javascript">
         $(function(){
             $("li").removeClass("active");
@@ -42,7 +42,9 @@
                 BuscoCorreo($(this).val());
             });
             $('#GuardarCorreo').on('click',function(){
+                if(DatosCompletos()){
                     GrabarCorreo();
+                }
             });
             BuscoCorreo($('#cmbRegion').val());//BUSCO EL PRIMER CORREO
         });
@@ -62,8 +64,7 @@
                     if (d.error) {                        
                         alert(d.mensaje);                        
                     }
-                    else
-                    {                        
+                    else{                        
                         $("#txtUsuario").val(d.data);
                     }
                 }
@@ -90,8 +91,7 @@
                     if (d.error) {                        
                         alert(d.mensaje);                        
                     }
-                    else
-                    {                        
+                    else{                        
                         alert("Datos del correo actualizados con exito");
                     }
                 }

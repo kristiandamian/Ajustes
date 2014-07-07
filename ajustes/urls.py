@@ -26,6 +26,7 @@ from ajustesLogica.views.reportes.controllerDistribucionClasificaciones import D
 from ajustesLogica.views.reportes.controllerDistribucionEstatus import DistribucionEstatus
 from ajustesLogica.views.reportes.controllerDistribucionCentros import DistribucionCentro
 from ajustesLogica.views.reportes.controllerAjustesSinEvidencia import AjusteSinEvidencia
+from ajustesLogica.views.reportes.controllerAjustesCancelados import AjustesCancelados
 from ajustesLogica.views.SeguimientoSA.controllerSA import SeguimientoSA
 from ajustesLogica.models import UsuarioAcceso, RegionAuditoria, ZonaAuditoria, ClasificacionAjuste
 from ajustesLogica.models import UsuarioAccesoAdmin
@@ -89,7 +90,7 @@ urlpatterns = patterns('',                                                      
 ############################################################################################################
     url(r'^ajustes/GraficaTendenciasAjustes/$',TendenciasAjustes),                                      ####
     url(r'^ajustes/AjustesPorFecha/$',AjustesPorFecha),                                                 ####
-    url(r'^ajustes/AjustesSinEvidencia/$',AjusteSinEvidencia),                                         ####
+    url(r'^ajustes/AjustesSinEvidencia/$',AjusteSinEvidencia),                                          ####
     url(r'^ajustes/AjustePorTipoZona/$',AjustePorTipoZona),                                             ####
     url(r'^ajustes/AjustePorTipoRegion/(?P<zona_id>\d+)/$',AjustePorTipoRegion),                        ####
     url(r'^ajustes/AjustePorMontoZona/$',AjustePorMontoZona),                                           ####
@@ -99,6 +100,7 @@ urlpatterns = patterns('',                                                      
     url(r'^ajustes/DistribucionClasificacion/$',DistribucionClasificacion),                             ####
     url(r'^ajustes/DistribucionEstatus/$',DistribucionEstatus),                                         ####
     url(r'^ajustes/DistribucionCentro/$',DistribucionCentro),                                           ####
+    url(r'^ajustes/AjustesCancelados/$',AjustesCancelados),                                             ####    
 ############################################################################################################
 ####  LIGA PARA LOS ARCHIVOS SUBIDOS (EVIDENCIAS)                                                       ####
 ############################################################################################################

@@ -6,4 +6,4 @@ from ajustesLogica.Config import Configuracion
 @login_required(login_url=Configuracion.LOGIN_URL)
 def Inicio(request):
     template = loader.get_template('Inicio.html')
-    return HttpResponse(template.render(Context()))   
+    return HttpResponse(template.render(Context()))

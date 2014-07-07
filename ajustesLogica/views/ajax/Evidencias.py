@@ -44,7 +44,7 @@ def BuscarAjustes(request):
         else:
             ajustes=serializers.serialize("json",ajustes)
     response_data = {}
-    response_data['error'] = error 
+    response_data['error'] = error
     response_data['mensaje'] = msg
     response_data['ajustes'] = ajustes
     
@@ -94,15 +94,13 @@ def upload(request):
                 upload.save()
     
                 error = False
-                msg = "Se ha anexado el archivo:"
-                #msg = "Se ha anexado el archivo:/%s" % upload.upload
+                msg = "Se ha anexado el archivo:"                
             else:
                 msg="No existe el ajuste seleccionado"
         else:
             msg=form.messages
     else:
-        msg="Metodo incorrecto para subir el archivo"
-    
+        msg="Metodo incorrecto para subir el archivo"    
 
     response_data['error'] = error
     response_data['mensaje'] = msg

@@ -40,9 +40,9 @@ def RegistroAutorizacion(request):
     
                     EnvioCorreo(request,ajuste,correos)
     response_data = {}
-    response_data['error'] = error
-    response_data['mensaje'] = msg
-    response_data['ajustes'] = None
+    response_data["error"] = error
+    response_data["mensaje"] = msg
+    response_data["ajustes"] = None
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 def ValidoCorreos(ids):
@@ -80,7 +80,7 @@ def ValidoAnexos(ids):
 def EnvioCorreo(request,ajuste,correos):
     usuario=""
     password=""
-    titulo='Ajuste de auditoria'
+    titulo="Ajuste de auditoria"
     mensaje="""
                 Buen dia.
                 
@@ -92,7 +92,6 @@ def EnvioCorreo(request,ajuste,correos):
                 
                 """+ajuste.Region.GerenteRegion+"""
                 Region """+ajuste.Region.NombreRegion+"""
-                
                 
                 *** Este es un correo autogenerado ***
             """
