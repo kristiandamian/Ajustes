@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader, Context
 from django.db.models.aggregates import Sum, Count
 from django.db.models import Q
-from ajustesLogica.models import RegionAuditoria, Ajuste
+from ajustesLogica.models import RegionAuditoria, Ajuste, CuentaAfectadaAjuste
 from ajustesLogica.Config import Configuracion
 
 @login_required(login_url=Configuracion.LOGIN_URL)
@@ -52,12 +52,12 @@ def DistribucionTienda(request):
             print 
 
         if not PorNumeroAjustes:
-            datos=Ajuste.objects.filter(FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("Tienda").values('Tienda').annotate(Cargo=Sum('Monto'))
+            datos=CuentaAfectadaAjuste.objects.filter(AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Tienda").values('Tienda').annotate(Cargo=Sum('Monto'))
         else:
-            datos=Ajuste.objects.filter(FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("Tienda").values('Tienda').annotate(Cargo=Count('Tienda'))
+            datos=CuentaAfectadaAjuste.objects.filter(AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Tienda").values('Tienda').annotate(Cargo=Count('Tienda', distinct=True))
         
         if region>0:
-            datos=datos.filter(Region__id=region)
+            datos=datos.filter(AjusteAfectado__Region__id=region)
         
         for d in datos:
             resultados.append((d['Tienda'],d['Cargo']))

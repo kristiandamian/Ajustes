@@ -63,9 +63,9 @@ def DistribucionEstatus(request):
                         datos=CierreAjuste.objects.filter(AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Estatus").values('Estatus').annotate(Cargo=Sum('AjusteAfectado__Monto'))
             else:
                     if tda>0:
-                        datos=CierreAjuste.objects.filter(AjusteAfectado__Tienda=tda, AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Estatus").values('Estatus').annotate(Cargo=Count('Estatus'))
+                        datos=CierreAjuste.objects.filter(AjusteAfectado__Tienda=tda, AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Estatus").values('Estatus').annotate(Cargo=Count('Estatus', distinct=True))
                     else:
-                        datos=CierreAjuste.objects.filter(AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Estatus").values('Estatus').annotate(Cargo=Count('Estatus'))
+                        datos=CierreAjuste.objects.filter(AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Estatus").values('Estatus').annotate(Cargo=Count('Estatus', distinct=True))
             if region>0:
                 datos=datos.filter(AjusteAfectado__Region__id=region)
             for d in datos:

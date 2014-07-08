@@ -63,9 +63,9 @@ def DistribucionClasificacion(request):
                         datos=CierreAjuste.objects.filter(AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Clasificacion__Clasificacion").values('Clasificacion__Clasificacion').annotate(Cargo=Sum('AjusteAfectado__Monto'))
             else:
                     if tda>0:
-                        datos=CierreAjuste.objects.filter(AjusteAfectado__Tienda=tda, AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Clasificacion__Clasificacion").values('Clasificacion__Clasificacion').annotate(Cargo=Count('Clasificacion__Clasificacion'))
+                        datos=CierreAjuste.objects.filter(AjusteAfectado__Tienda=tda, AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Clasificacion__Clasificacion").values('Clasificacion__Clasificacion').annotate(Cargo=Count('Clasificacion__Clasificacion', distinct=True))
                     else:
-                        datos=CierreAjuste.objects.filter(AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Clasificacion__Clasificacion").values('Clasificacion__Clasificacion').annotate(Cargo=Count('Clasificacion__Clasificacion'))
+                        datos=CierreAjuste.objects.filter(AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Clasificacion__Clasificacion").values('Clasificacion__Clasificacion').annotate(Cargo=Count('Clasificacion__Clasificacion', distinct=True))
             
             if region>0:
                 datos=datos.filter(AjusteAfectado__Region__id=region)

@@ -57,14 +57,14 @@ def DistribucionCentro(request):
             
             if not PorNumeroAjustes:
                     if tda>0:
-                        datos=CuentaAfectadaAjuste.objects.filter(AjusteAfectado__Tienda=tda, AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Tipo").values('Tipo').annotate(Cargo=Sum('AjusteAfectado__Monto'))
+                        datos=CuentaAfectadaAjuste.objects.filter(AjusteAfectado__Tienda=tda, AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Tipo").values('Tipo').annotate(Cargo=Sum('Monto'))
                     else:
-                        datos=CuentaAfectadaAjuste.objects.filter(AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Tipo").values('Tipo').annotate(Cargo=Sum('AjusteAfectado__Monto'))
+                        datos=CuentaAfectadaAjuste.objects.filter(AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Tipo").values('Tipo').annotate(Cargo=Sum('Monto'))
             else:
                     if tda>0:
-                        datos=CuentaAfectadaAjuste.objects.filter(AjusteAfectado__Tienda=tda, AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Tipo").values('Tipo').annotate(Cargo=Count('Tipo'))
+                        datos=CuentaAfectadaAjuste.objects.filter(AjusteAfectado__Tienda=tda, AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Tipo").values('Tipo').annotate(Cargo=Count('AjusteAfectado', distinct=True))
                     else:
-                        datos=CuentaAfectadaAjuste.objects.filter(AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Tipo").values('Tipo').annotate(Cargo=Count('Tipo'))
+                        datos=CuentaAfectadaAjuste.objects.filter(AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Tipo").values('Tipo').annotate(Cargo=Count('AjusteAfectado', distinct=True))
             if region>0:
                 datos=datos.filter(AjusteAfectado__Region__id=region)
             for d in datos:
