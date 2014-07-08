@@ -27,6 +27,7 @@ from ajustesLogica.views.reportes.controllerDistribucionEstatus import Distribuc
 from ajustesLogica.views.reportes.controllerDistribucionCentros import DistribucionCentro
 from ajustesLogica.views.reportes.controllerAjustesSinEvidencia import AjusteSinEvidencia
 from ajustesLogica.views.reportes.controllerAjustesCancelados import AjustesCancelados
+from ajustesLogica.views.reportes.controllerDistribucionTiendas import DistribucionTienda
 from ajustesLogica.views.SeguimientoSA.controllerSA import SeguimientoSA
 from ajustesLogica.models import UsuarioAcceso, RegionAuditoria, ZonaAuditoria, ClasificacionAjuste
 from ajustesLogica.models import UsuarioAccesoAdmin
@@ -101,7 +102,8 @@ urlpatterns = patterns('',                                                      
     url(r'^ajustes/DistribucionClasificacion/$',DistribucionClasificacion),                             ####
     url(r'^ajustes/DistribucionEstatus/$',DistribucionEstatus),                                         ####
     url(r'^ajustes/DistribucionCentro/$',DistribucionCentro),                                           ####
-    url(r'^ajustes/AjustesCancelados/$',AjustesCancelados),                                             ####    
+    url(r'^ajustes/AjustesCancelados/$',AjustesCancelados),                                             ####
+    url(r'^ajustes/DistribucionTienda/$',DistribucionTienda),                                           ####    
 ############################################################################################################
 ####  LIGA PARA LOS ARCHIVOS SUBIDOS (EVIDENCIAS)                                                       ####
 ############################################################################################################

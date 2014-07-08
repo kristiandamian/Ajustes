@@ -3,27 +3,25 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader, Context
 from django.db.models.aggregates import Sum, Count
+from django.db.models import Q
 from ajustesLogica.models import RegionAuditoria, Ajuste
 from ajustesLogica.Config import Configuracion
 
 @login_required(login_url=Configuracion.LOGIN_URL)
-def TendenciasAjustes(request):
-    template = loader.get_template('reportes/GraficaTendencias.html')
+def DistribucionTienda(request):
+    template = loader.get_template('reportes/DistribucionTienda.html')
     regiones=RegionAuditoria.objects.PorPermiso(request.user).order_by("NombreRegion")
     
     resultados=[]
     generar=False
-    region=-1
-    tda=""
+    region=-1    
     fechainicial=""
     fechafinal=""
     error=False
-    msg=""
-    daysDiff=Configuracion.DAYS_DIFF
+    msg=""    
     PorNumeroAjustes=False
     if request.method == 'POST':
-        generar=True
-        tda=request.POST["txtTienda"]
+        generar=True        
         region=request.POST["cmbRegion"]
         datos=None
         PorNumeroAjustes=request.POST.get('NumAjustes', False)
@@ -45,46 +43,35 @@ def TendenciasAjustes(request):
         except:
             error=True
             msg="Region incorrecta"
-        try:
-            tda=int(tda)
-        except:
-            tda=0
             
         if type(fechainicial) is datetime and type(fechafinal) is datetime and fechainicial>=fechafinal:
             error=True
             msg ="La fecha final debe ser mayor a la fecha inicial"
         if not error:
-            daysDiff = fechafinal-fechainicial
-            daysDiff = daysDiff.days
-            campo=""            
-            
-            if not PorNumeroAjustes:
-                if tda>0:
-                    datos=Ajuste.objects.filter(Tienda=tda,FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion").values('FechaRecepcion').annotate(Cargo=Sum('Monto'))
-                else:
-                    datos=Ajuste.objects.filter(FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion").values('FechaRecepcion').annotate(Cargo=Sum('Monto'))
-            else:
-                if tda>0:
-                    datos=Ajuste.objects.filter(Tienda=tda, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion").values('FechaRecepcion').annotate(Cargo=Count('FechaRecepcion'))
-                else:
-                    datos=Ajuste.objects.filter(FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("FechaRecepcion").values('FechaRecepcion').annotate(Cargo=Count('FechaRecepcion'))
-                
-            if region>0:
-                datos=datos.filter(Region__id=region)
-            for d in datos:
-                resultados.append((d['FechaRecepcion'],d['Cargo']))
+            campo=""
+            print 
+
+        if not PorNumeroAjustes:
+            datos=Ajuste.objects.filter(FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("Tienda").values('Tienda').annotate(Cargo=Sum('Monto'))
+        else:
+            datos=Ajuste.objects.filter(FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal).order_by("Tienda").values('Tienda').annotate(Cargo=Count('Tienda'))
+        
+        if region>0:
+            datos=datos.filter(Region__id=region)
+        
+        for d in datos:
+            resultados.append((d['Tienda'],d['Cargo']))
                 
     context=RequestContext(request, {
                 'regiones':regiones,
                 'Datos':resultados,
                 'Generar':generar,        
                 'FechaInicial':fechainicial,
-                'FechaFinal':fechafinal,
-                'Tienda':tda,
-                'DiasEntreFechas':daysDiff<Configuracion.MAX_DAYS_DIFF,
+                'FechaFinal':fechafinal,                
                 'Error':error,
                 'MensajeError':msg,
                 'Region':int(region),
                 'PorNumeroAjustes':PorNumeroAjustes,
         })
-    return HttpResponse(template.render(context))   
+    return HttpResponse(template.render(context))
+

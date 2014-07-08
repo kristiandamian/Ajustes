@@ -4,25 +4,17 @@
     <link href="{% static "css/dark-hive/jquery-ui-1.10.4.custom.min.css" %}" rel="stylesheet">
     <link href="{% static "css/jqplot/jquery.jqplot.min.css" %}" rel="stylesheet">
 
-    <h3>Grafica de distribuci&oacute;n de ajustes por centros</h3>
+    <h3>Grafica de distribuci&oacute;n de ajustes por tiendas</h3>
     <div>
         <form  method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="container">
-                <div class="row">
-                    <div class="col-sm-2">
-                            <label for="txtTienda">Tienda</label>
-                            <input type="text" name="txtTienda" class="form-control" id="txtTienda" placeholder="Numero de tienda" maxlength="5"
-                                    {%if Tienda > 0 %}
-                                        value="{{Tienda}}"
-                                    {% endif %}
-                                   />
-                    </div>                        
+                <div class="row">                      
                     <div class="col-sm-2">
                         <label for="cmbRegion">Regiones</label>
                         <select id="cmbRegion" name="cmbRegion" class="form-control">
                             <option value="-1">Todas</option>
-                            {%for r in regiones%}
+                            {%for r in regiones%}                                
                                 <option value="{{r.id}}"
                                         {%if r.id == Region%}
                                             selected

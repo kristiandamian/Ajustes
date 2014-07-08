@@ -21,6 +21,7 @@
                     <div class="col-sm-2">
                         <label for="cmbRegion">Regiones</label>
                         <select id="cmbRegion" name="cmbRegion" class="form-control">
+                            <option value="-1">Todas</option>
                             {%for r in regiones%}
                                 <option value="{{r.id}}"
                                         {%if r.id == Region%}

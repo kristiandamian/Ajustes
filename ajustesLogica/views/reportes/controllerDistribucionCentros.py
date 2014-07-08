@@ -44,26 +44,29 @@ def DistribucionCentro(request):
             tda=int(tda)
         except:
             tda=0
-            
+        try:
+            region=int(region)
+        except:
+            error=True
+            msg="Region incorrecta"
         if type(fechainicial) is datetime and type(fechafinal) is datetime and fechainicial>=fechafinal:
             error=True
             msg ="La fecha final debe ser mayor a la fecha inicial"
         if not error:
             campo=""            
-            if int(region)>0:
-                if not PorNumeroAjustes:
+            
+            if not PorNumeroAjustes:
                     if tda>0:
-                        datos=CuentaAfectadaAjuste.objects.filter(AjusteAfectado__Tienda=tda, AjusteAfectado__Region__id=region, AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Tipo").values('Tipo').annotate(Cargo=Sum('AjusteAfectado__Monto'))
+                        datos=CuentaAfectadaAjuste.objects.filter(AjusteAfectado__Tienda=tda, AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Tipo").values('Tipo').annotate(Cargo=Sum('AjusteAfectado__Monto'))
                     else:
-                        datos=CuentaAfectadaAjuste.objects.filter(AjusteAfectado__Region__id=region, AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Tipo").values('Tipo').annotate(Cargo=Sum('AjusteAfectado__Monto'))
-                else:
-                    if tda>0:
-                        datos=CuentaAfectadaAjuste.objects.filter(AjusteAfectado__Tienda=tda, AjusteAfectado__Region__id=region, AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Tipo").values('Tipo').annotate(Cargo=Count('Tipo'))
-                    else:
-                        datos=CuentaAfectadaAjuste.objects.filter(AjusteAfectado__Region__id=region, AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Tipo").values('Tipo').annotate(Cargo=Count('Tipo'))
+                        datos=CuentaAfectadaAjuste.objects.filter(AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Tipo").values('Tipo').annotate(Cargo=Sum('AjusteAfectado__Monto'))
             else:
-                error=True
-                msg="Debe seleccionar una region"
+                    if tda>0:
+                        datos=CuentaAfectadaAjuste.objects.filter(AjusteAfectado__Tienda=tda, AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Tipo").values('Tipo').annotate(Cargo=Count('Tipo'))
+                    else:
+                        datos=CuentaAfectadaAjuste.objects.filter(AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal).order_by("Tipo").values('Tipo').annotate(Cargo=Count('Tipo'))
+            if region>0:
+                datos=datos.filter(AjusteAfectado__Region__id=region)
             for d in datos:
                 resultados.append((NombreTipo(d['Tipo']),d['Cargo']))
                 
