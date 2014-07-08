@@ -10,7 +10,6 @@ from ajustesLogica.Config import Configuracion
 def AjustesCancelados(request):
     template = loader.get_template('reportes/AjustesCancelados.html')
     regiones=RegionAuditoria.objects.PorPermiso(request.user).order_by("NombreRegion")
-    
     region=-1
     tda=""
     fechainicial=""
@@ -33,7 +32,6 @@ def AjustesCancelados(request):
         except:
             error=True
             msg="La fecha final esta en formato incorrecto, debe ser dd/mm/aaaa"
-
         try:
             tda=int(tda)
         except:
@@ -61,4 +59,4 @@ def AjustesCancelados(request):
                 'MensajeError':msg,
                 'Region':int(region),
         })
-    return HttpResponse(template.render(context)) 
+    return HttpResponse(template.render(context))

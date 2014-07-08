@@ -80,14 +80,15 @@ def upload(request):
     
     if request.is_ajax():
         form = DocumentForm(request.POST, request.FILES)
-
+        
         if form.is_valid():
+            NombreDelArchivo= request.FILES["docfile"]
             ajuste=Ajuste.objects.filter(id=request.POST["ajuste"])
             if ajuste.__len__()>0:
                 ajuste=ajuste[0]
                 upload = ImagenAjuste()
-                upload.archivo = request.FILES["docfile"]
-                upload.Imagen = request.FILES["docfile"]
+                upload.archivo = NombreDelArchivo
+                upload.Imagen = NombreDelArchivo
                 upload.Usuario=request.user
                                 
                 upload.CorrespondeAjuste=ajuste

@@ -10,7 +10,7 @@ from ajustesLogica.Config import Configuracion
 def AjustePorTipoZona(request):
     template = loader.get_template('reportes/AjustesPorTipo.html')
     zonas=ZonaAuditoria.objects.PorPermiso(request.user)
-    Titulos=["Registrados","Activos","Sin autorizar","Enviados","Cancelados","Procede ajuste","No Procede ajuste"]
+    Titulos=["Registrados", "Finalizados","Activos","Sin autorizar","Enviados","Cancelados","Procede ajuste","No Procede ajuste"]
     datos=[]
     totales=[]
     totalReg=0
@@ -20,6 +20,7 @@ def AjustePorTipoZona(request):
     totalCanc=0
     totalProc=0
     totalNoProc=0
+    totalFinalizado=0
     fechainicial=datetime.min
     fechafinal=datetime.max
     error=False
@@ -41,7 +42,15 @@ def AjustePorTipoZona(request):
         
         totalReg+=ajustes[0]["total"]
         
-        ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,Activo=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
+        ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,Finalizado=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
+                      .values('Region') \
+                      .annotate(total = Count('Tienda')))        
+        tipo=TipoEspecifico("Finalizados",ajustes[0]["total"])
+        ajuste.AddTipo(tipo)
+        
+        totalFinalizado+=ajustes[0]["total"]
+        
+        ajustes=ValidoAjustes(Ajuste.objects.filter(Region__Zona=z,Finalizado=False,Activo=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region__Zona') \
                       .annotate(total = Count('Tienda')))        
         tipo=TipoEspecifico("Activos",ajustes[0]["total"])
@@ -91,6 +100,7 @@ def AjustePorTipoZona(request):
         
         datos.append(ajuste)
     totales.append(totalReg)
+    totales.append(totalFinalizado)
     totales.append(totalAct)
     totales.append(totalSinAut)
     totales.append(totalEnv)
@@ -121,7 +131,7 @@ def AjustePorTipoZona(request):
 def AjustePorTipoRegion(request,zona_id):
     template = loader.get_template('reportes/AjustesPorTipo.html')
     regiones=RegionAuditoria.objects.filter(Zona__id=zona_id)
-    Titulos=["Registrados","Activos","Sin autorizar","Enviados","Cancelados","Procede ajuste","No Procede ajuste"]
+    Titulos=["Registrados", "Finalizados","Activos","Sin autorizar","Enviados","Cancelados","Procede ajuste","No Procede ajuste"]
     datos=[]
     totales=[]
     totalReg=0
@@ -131,6 +141,7 @@ def AjustePorTipoRegion(request,zona_id):
     totalCanc=0
     totalProc=0
     totalNoProc=0
+    totalFinalizado=0
     fechainicial=datetime.min
     fechafinal=datetime.max
     error=False
@@ -151,13 +162,26 @@ def AjustePorTipoRegion(request,zona_id):
         
         totalReg+=ajustes[0]["total"]
         
-        ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,Activo=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
+        
+        ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,Finalizado=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
+                      .values('Region') \
+                      .annotate(total = Count('Tienda')))        
+        tipo=TipoEspecifico("Finalizados",ajustes[0]["total"])
+        ajuste.AddTipo(tipo)
+        
+        totalFinalizado+=ajustes[0]["total"]
+        
+        ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,Finalizado=False,Activo=True, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region') \
                       .annotate(total = Count('Tienda')))        
         tipo=TipoEspecifico("Activos",ajustes[0]["total"])
         ajuste.AddTipo(tipo)
         
         totalAct+=ajustes[0]["total"]
+        
+                
+
+        
         
         ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,Enviado=False, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region') \
@@ -201,12 +225,14 @@ def AjustePorTipoRegion(request,zona_id):
         
         datos.append(ajuste)
     totales.append(totalReg)
+    totales.append(totalFinalizado)
     totales.append(totalAct)
     totales.append(totalSinAut)
     totales.append(totalEnv)
     totales.append(totalCanc)
     totales.append(totalProc)
     totales.append(totalNoProc)
+    
     if fechainicial==datetime.min:
         fechainicial=None
     if fechafinal==datetime.max:

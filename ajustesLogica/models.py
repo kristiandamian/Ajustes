@@ -157,7 +157,7 @@ class AjusteForm(ModelForm):
 
 class ImagenAjuste(models.Model):
     Imagen = models.CharField('Imagen',max_length=500)
-    archivo = models.FileField(upload_to='uploads/%Y')
+    archivo = models.FileField(upload_to='uploads/%Y/%m/%d')
     CorrespondeAjuste=models.ForeignKey(Ajuste)
     Activo=models.BooleanField(verbose_name='Procede ajuste', default=True)
     FechaRegistroSistema=models.DateTimeField(auto_now=True)
