@@ -2,7 +2,8 @@
 {% block content %}
     {% load staticfiles %}
     <link href="{% static "css/dark-hive/jquery-ui-1.10.4.custom.min.css" %}" rel="stylesheet">
-
+    <link href="{% static "css/jqplot/jquery.jqplot.min.css" %}" rel="stylesheet">
+    
     <h3>Grafica de tendencia de ajustes</h3>
     <div>
         <form  method="post" enctype="multipart/form-data">
@@ -67,6 +68,9 @@
     <script type="text/javascript" src="{% static "js/jqplot/jqplot.dateAxisRenderer.min.js"%}"></script>
     <script type="text/javascript" src="{% static "js/jquery-ui-1.10.4.custom.min.js" %}"></script>
     <script type="text/javascript" src="{% static "js/datepickerUtil.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jqplot/jqplot.highlighter.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jqplot/jqplot.cursor.min.js" %}"></script>
+
 
     <script type="text/javascript">
         $(function(){
@@ -114,6 +118,13 @@
                         tickInterval:dias+' day'//'1 month'
                         }
                     },
+                 highlighter: {
+                 show: true,
+                    sizeAdjust: 7.5
+                  },
+                  cursor: {
+                    show: false
+                  },
                 series:[{lineWidth:4, }]
             });
       }
