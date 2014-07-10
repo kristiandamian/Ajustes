@@ -78,7 +78,11 @@
                             <label>Estatus</label>
                             <input type="text" name="txtObservaciones" class="form-control" id="txtEstatus" placeholder="Estatus" maxlength="5000" />
                     </div>
-                    <div class="col-sm-8">
+                    <div class="col-sm-3">
+                            <label>Definicion</label>
+                            <input type="text" name="txtDefinicion" class="form-control" id="txtDefinicion" placeholder="Definicion" maxlength="500" />
+                    </div>
+                    <div class="col-sm-5">
                             <label for="txtObservaciones">Observaciones</label>
                             <input type="text" name="txtObservaciones" class="form-control" id="txtObservaciones" placeholder="Observaciones" maxlength="5000" />
                     </div>
@@ -420,10 +424,17 @@
                         if (cierre!=null) {
                             $("#txtEstatus").val(cierre[0].fields.Estatus);
                             $("#txtObservaciones").val(cierre[0].fields.Observaciones);
+                            $("#txtDefinicion").val(cierre[0].fields.TipoFraude);
                                                 
                             $.each(d.EstatusCierre,function(index,value){                                    
                                 if ($("#txtEstatus").val()==value[0]) {
                                     $("#txtEstatus").val(value[1]);
+                                }                                    
+                            });
+                                                        
+                            $.each(d.TipoFraude,function(index,value){                            
+                                if ($("#txtDefinicion").val()==value[0]) {
+                                    $("#txtDefinicion").val(value[1]);
                                 }                                    
                             });
                             

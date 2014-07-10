@@ -8,15 +8,16 @@ from django.contrib.auth.models import User
 class ZonaAuditoriaManager(models.Manager):
     def PorPermiso(self, user):
         usuario=UsuarioAcceso.objects.filter(Usuario=user)
-        if usuario.__len__()==0 or  user.is_superuser or usuario[0].Region==None:#no hay un usuario o ese usuario es "superusuario" o tiene acceso a nivel nacional
+        if usuario.__len__()==0 or  user.is_superuser or usuario[0].Zona==None:#no hay un usuario o ese usuario es "superusuario" o tiene acceso a nivel nacional
            return super(ZonaAuditoriaManager,self).get_query_set()
         zonas=[]
-        for u in usuario:                          
-            if u.Zona!=None:
-                zonas+=ZonaAuditoria.objects.filter(id=u.Zona.id).values_list("id",flat=True)
-            else:
-                if u.Region!=None:
+        for u in usuario:
+            if u.Region!=None:
                     zonas+=RegionAuditoria.objects.filter(Zona__id=u.Zona.id).values_list("Zona__id",flat=True)
+            else:
+                if u.Zona!=None:
+                    zonas+=ZonaAuditoria.objects.filter(id=u.Zona.id).values_list("id",flat=True)
+                
         return super(ZonaAuditoriaManager,self).get_query_set().filter(id__in = zonas)
     
 class ZonaAuditoria(models.Model):
@@ -33,12 +34,12 @@ class ZonaAuditoria(models.Model):
         
 class RegionAuditoriaManager(models.Manager):
     def PorPermiso(self, user):
-        usuario=UsuarioAcceso.objects.filter(Usuario=user)
-        if usuario.__len__()==0 or  user.is_superuser or usuario[0].Region==None:#no hay un usuario o ese usuario es "superusuario" o tiene acceso a nivel nacional
+        usuario=UsuarioAcceso.objects.filter(Usuario=user)        
+        if usuario.__len__()==0 or  user.is_superuser or (usuario[0].Zona==None and  usuario[0].Region==None):#no hay un usuario o ese usuario es "superusuario" o tiene acceso a nivel nacional
            return super(RegionAuditoriaManager,self).get_query_set()
         regiones=[]
-        for u in usuario:                          
-            if u.Zona!=None and u.Region!=None:
+        for u in usuario:
+            if u.Region!=None:
                 regiones+=RegionAuditoria.objects.filter(id=u.Region.id).values_list("id",flat=True)
             else:
                 if u.Zona!=None:                
@@ -77,7 +78,7 @@ class Ajuste(models.Model):
     Enviado=models.BooleanField(verbose_name='Enviado a cobranza ajuste', default=False)
     Finalizado=models.BooleanField(default=False)
     Usuario=models.ForeignKey(User)
-    
+    RegionRegistra=models.ForeignKey(RegionAuditoria,related_name='RegionRegistra', verbose_name='Region que registra')
     class Meta:
         permissions = (
             ("Puede_Cancelar", "Puede cancelar ajustes"),
@@ -124,12 +125,21 @@ class CierreAjuste(models.Model):
         (1,'Recuperable'),
         (2,'No Recuperable'),
         (3,'Aclarado con soporte'),
+        (4,'Condonado'),
+        (4,'En demanda'),
+    )
+    TIPO_FRAUDE=(
+        (0,'No es fraude'),
+        (1,'Fraude interno'),
+        (2,'Fraude externo'),
     )
     AjusteAfectado=models.ForeignKey(Ajuste)
     Clasificacion=models.ForeignKey(ClasificacionAjuste)
     Observaciones = models.CharField(max_length=5000)
     Estatus=models.IntegerField(choices=TIPO_ESTATUS)    
     FechaRegistroSistema=models.DateTimeField(auto_now=True)
+    EsFraude=models.BooleanField(verbose_name='Es Fraude', default=False)
+    TipoFraude=models.IntegerField(choices=TIPO_FRAUDE,blank=True)
     Usuario=models.ForeignKey(User)
 
 class EmpleadosResponsables(models.Model):

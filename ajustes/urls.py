@@ -10,7 +10,7 @@ from ajustesLogica.views.ajustes.controllerCierre import FinalizarAjuste
 from ajustesLogica.views.soporte.controllerCancelaciones import CancelarAjuste
 from ajustesLogica.views.soporte.controllerCorreo import ConfiguracionCorreo
 from ajustesLogica.views.viewsLogin import loginUsuario, logoutUsuario
-from ajustesLogica.views.ajax.Ajustes import BuscarTodosLosAjustes, BuscarNotasAjuste
+from ajustesLogica.views.ajax.Ajustes import BuscarTodosLosAjustes, BuscarNotasAjuste, BuscarAjustePorCte
 from ajustesLogica.views.ajax.Evidencias import BuscarAjustes, BuscarAjuste, upload, BuscarEvidencias
 from ajustesLogica.views.ajax.Autorizaciones import RegistroAutorizacion
 from ajustesLogica.views.ajax.Correos import BuscarCorreo, GrabarCorreo
@@ -28,6 +28,8 @@ from ajustesLogica.views.reportes.controllerDistribucionCentros import Distribuc
 from ajustesLogica.views.reportes.controllerAjustesSinEvidencia import AjusteSinEvidencia
 from ajustesLogica.views.reportes.controllerAjustesCancelados import AjustesCancelados
 from ajustesLogica.views.reportes.controllerDistribucionTiendas import DistribucionTienda
+from ajustesLogica.views.reportes.controllerAjustePorFraudeZona import AjustePorFraudeZona, AjustePorFraudeRegion
+from ajustesLogica.views.reportes.controllerAjustesSinFinalizar import AjustesSinFinalizar
 from ajustesLogica.views.SeguimientoSA.controllerSA import SeguimientoSA
 from ajustesLogica.models import UsuarioAcceso, RegionAuditoria, ZonaAuditoria, ClasificacionAjuste
 from ajustesLogica.models import UsuarioAccesoAdmin
@@ -82,6 +84,7 @@ urlpatterns = patterns('',                                                      
     url(r'^ajustes/ajax/FinalizarAjuste/$',FinalizacionAjuste),                                         ####
     url(r'^ajustes/ajax/BuscarSAs/$',BuscarSAs),                                                        ####
     url(r'^ajustes/ajax/GrabarSA/$',GrabarSAs),                                                         ####
+    url(r'^ajustes/ajax/BuscarAjustePorCte/$',BuscarAjustePorCte),                                      ####
 ############################################################################################################
 ####    SOPORTE                                                                                         ####
 ############################################################################################################
@@ -103,7 +106,10 @@ urlpatterns = patterns('',                                                      
     url(r'^ajustes/DistribucionEstatus/$',DistribucionEstatus),                                         ####
     url(r'^ajustes/DistribucionCentro/$',DistribucionCentro),                                           ####
     url(r'^ajustes/AjustesCancelados/$',AjustesCancelados),                                             ####
-    url(r'^ajustes/DistribucionTienda/$',DistribucionTienda),                                           ####    
+    url(r'^ajustes/DistribucionTienda/$',DistribucionTienda),                                           ####
+    url(r'^ajustes/AjustePorFraude/$',AjustePorFraudeZona),                                             ####
+    url(r'^ajustes/AjustePorFraudeRegion/(?P<zona_id>\d+)/$',AjustePorFraudeRegion),                    ####
+    url(r'^ajustes/AjustesSinFinalizar/$',AjustesSinFinalizar),                                         ####
 ############################################################################################################
 ####  LIGA PARA LOS ARCHIVOS SUBIDOS (EVIDENCIAS)                                                       ####
 ############################################################################################################

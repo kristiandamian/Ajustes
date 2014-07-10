@@ -13,6 +13,7 @@ def FinalizacionAjuste(request):
     aj=json.loads(json.loads(request.body))
     error=False
     msg=""
+    NO_FRAUDE=0
     ajuste=Ajuste.objects.filter(id=aj["id"])
     if ajuste.__len__()>0:
         clas=ClasificacionAjuste.objects.filter(id=aj["clasificacion"])
@@ -32,6 +33,11 @@ def FinalizacionAjuste(request):
             cierre.Observaciones=aj["observacion"]
             cierre.Estatus=aj["estatus"]
             cierre.Usuario=request.user
+            cierre.EsFraude=aj["esfraude"]
+            if not cierre.EsFraude:
+                cierre.TipoFraude=NO_FRAUDE
+            else:
+                cierre.TipoFraude=aj["tipofraude"]
             cierre.save()
             
             for emp in aj["empleados"]:

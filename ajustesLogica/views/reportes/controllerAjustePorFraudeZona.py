@@ -5,13 +5,15 @@ from django.template import RequestContext, loader, Context
 from django.db.models import Count, Sum
 from ajustesLogica.models import RegionAuditoria, Ajuste, ZonaAuditoria, ClasificacionAjuste, CierreAjuste 
 from ajustesLogica.views.reportes.controllerAjustePorTipo import ValidoFechas
+from ajustesLogica.views.reportes.controllerAjustePorClasificacionZona import Clasificaciones, DetalleClasificacion, ExisteElementoEnTotal
 from ajustesLogica.Config import Configuracion
 
+TEMPLATE_URI='reportes/AjustePorFraude.html'
 @login_required(login_url=Configuracion.LOGIN_URL)
-def AjustePorClasificacionZona(request):
-    template = loader.get_template('reportes/AjustePorClasificacion.html')
+def AjustePorFraudeZona(request):
+    template = loader.get_template(TEMPLATE_URI)
     zonas=ZonaAuditoria.objects.PorPermiso(request.user)
-    clasificaciones=ClasificacionAjuste.objects.all()
+    clasificaciones=CierreAjuste.TIPO_FRAUDE
     datos=[]
     totales=[]
     error=False
@@ -29,15 +31,15 @@ def AjustePorClasificacionZona(request):
         fechainicial=datosValidacion[2]
         fechafinal=datosValidacion[3]
     
-    for c in clasificaciones:        
+    for c in clasificaciones:
         totalClasificacion=0
         montoClasificacion=0
-        clasif=Clasificaciones(c.Clasificacion, c.Descripcion)
-        for z in zonas:           
+        clasif=Clasificaciones(c[1],c[0])
+        for z in zonas:
             index=ExisteElementoEnTotal(z.id,totales)
             if index<0:
                 totales.append({z.id:[0,0.0]})
-            cierres=CierreAjuste.objects.filter(Clasificacion=c,AjusteAfectado__Region__Zona=z,  AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal, AjusteAfectado__Activo=True)
+            cierres=CierreAjuste.objects.filter(TipoFraude=c[0],AjusteAfectado__Region__Zona=z,  AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal, AjusteAfectado__Activo=True)
             #for cierre in cierres:
             total=cierres.values('AjusteAfectado__Region__Zona') \
                       .annotate(total = Count('AjusteAfectado__Tienda'))
@@ -70,8 +72,8 @@ def AjustePorClasificacionZona(request):
         fechafinal=None
     
     context = RequestContext(request, {
-        'Titulo':'Clasificacion de ajustes por tipo por zona',                
-        'URL':'/ajustes/AjustePorClasificacionRegion/',
+        'Titulo':'Clasificacion de ajustes por tipo por fraudes',                
+        'URL':'/ajustes/AjustePorFraudeRegion/',
         'Zonas':zonas,
         'Datos':datos,
         'Totales':totales,
@@ -85,10 +87,10 @@ def AjustePorClasificacionZona(request):
     return HttpResponse(template.render(context))
 
 @login_required(login_url=Configuracion.LOGIN_URL)
-def AjustePorClasificacionRegion(request, zona_id):
-    template = loader.get_template('reportes/AjustePorClasificacion.html')
+def AjustePorFraudeRegion(request, zona_id):
+    template = loader.get_template(TEMPLATE_URI)
     regiones=RegionAuditoria.objects.PorPermiso(request.user).filter(Zona__id=zona_id)
-    clasificaciones=ClasificacionAjuste.objects.all()
+    clasificaciones=CierreAjuste.TIPO_FRAUDE
     datos=[]
     totales=[]
     error=False
@@ -109,12 +111,12 @@ def AjustePorClasificacionRegion(request, zona_id):
     for c in clasificaciones:        
         totalClasificacion=0
         montoClasificacion=0        
-        clasif=Clasificaciones(c.Clasificacion, c.Descripcion)
+        clasif=Clasificaciones(c[1],c[0])
         for z in regiones:           
             index=ExisteElementoEnTotal(z.id,totales)
             if index<0:
                 totales.append({z.id:[0,0.0]})
-            cierres=CierreAjuste.objects.filter(Clasificacion=c,AjusteAfectado__Region=z,  AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal, AjusteAfectado__Activo=True)
+            cierres=CierreAjuste.objects.filter(TipoFraude=c[0],AjusteAfectado__Region=z,  AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal, AjusteAfectado__Activo=True)
             #for cierre in cierres:
             total=cierres.values('AjusteAfectado__Region__Zona') \
                       .annotate(total = Count('AjusteAfectado__Tienda'))
@@ -147,7 +149,7 @@ def AjustePorClasificacionRegion(request, zona_id):
         fechafinal=None
     
     context = RequestContext(request, {
-        'Titulo':'Clasificacion de ajustes por tipo por region',                
+        'Titulo':'Clasificacion de ajustes por fraude por region',                
         'URL':None,
         'Zonas':None,
         'Regiones':regiones,
@@ -161,41 +163,3 @@ def AjustePorClasificacionRegion(request, zona_id):
         'granTotalMonto':granTotalMonto,
     })
     return HttpResponse(template.render(context))
-
-def ExisteElementoEnTotal(llave, totales):
-    existe=False
-    pos=-1
-    for t in totales:
-        pos+=1
-        if llave in t.keys():
-            existe=True            
-            break
-    if not existe:
-        pos=-1
-    return pos
-
-class Clasificaciones():
-    nombre=""
-    descripcion=""
-    detalles=[]
-    total=0
-    monto=0.0
-    def __init__(self, nombre, descripcion):
-        self.nombre=nombre
-        self.descripcion=descripcion
-        self.detalles=[]
-    
-    def AddDetalle(self,detalle):
-        self.detalles.append(detalle)
-        
-    def AddTotales(self,total,monto):
-        self.total=total
-        self.monto=monto
-
-class DetalleClasificacion():
-    total=0
-    monto=0.0
-
-    def __init__(self, total, monto):
-        self.total=total
-        self.monto=monto

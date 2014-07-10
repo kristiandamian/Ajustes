@@ -3,7 +3,8 @@ from django.template import RequestContext, loader, Context
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.http import Http404
-from ajustesLogica.models import Ajuste, UsuarioAcceso
+from django.db.models import Q
+from ajustesLogica.models import Ajuste, UsuarioAcceso, RegionAuditoria
 from ajustesLogica.Config import Configuracion
 
 @login_required(login_url=Configuracion.LOGIN_URL)
@@ -27,9 +28,9 @@ def RenderAjuste(request, template):
         if userPermiso[0].Region!=None:
             regiones=userPermiso.values_list("Region__id",flat=True)
         else:
-            regiones=RegionAuditoria.objects.filter(Region__Zona=userPermiso.Zona).values_list("Region__id",flat=True)
-
-        ajustes=Ajuste.objects.filter(Region__id__in=regiones, Enviado=False, Activo=True)
+            #zonas=UsuarioAcceso.objects.filter(Zona=userPermiso.Zona).values_list("Zona__id",flat=True)            
+            regiones=RegionAuditoria.objects.filter(Zona__id__in=userPermiso.values_list("Zona__id",flat=True)).values_list("id",flat=True)
+        ajustes=Ajuste.objects.filter(Q(Region__id__in=regiones)|Q(RegionRegistra__id__in=regiones), Enviado=False, Activo=True)
 
     context=RequestContext(request, {
         'ajustes':ajustes,

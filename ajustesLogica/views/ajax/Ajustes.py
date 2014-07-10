@@ -82,5 +82,28 @@ def BuscarNotasAjuste(request):
     response_data['TipoCentroCuenta']=CuentaAfectadaAjuste.TIPO_CENTRO
     response_data['EstatusCierre']=CierreAjuste.TIPO_ESTATUS
     response_data['EstatusLaboral']=EmpleadosResponsables.TIPO_ESTATUS_LABORAL
+    response_data['TipoFraude']=CierreAjuste.TIPO_FRAUDE
+    
+    return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+
+@login_required(login_url=Configuracion.LOGIN_URL)
+@csrf_exempt
+def BuscarAjustePorCte(request):
+    ajuste=json.loads(request.body)["Ajustes"]    
+    numcte=ajuste['numcte']
+    error=False
+    msg=""
+    ajustes=None
+
+    ajustes=Ajuste.objects.filter(NumCte=numcte).order_by("FechaRecepcion","Tienda","NumCte")
+    if ajustes.__len__()<=0:
+        ajustes=None
+    else:
+        ajustes=serializers.serialize("json",ajustes)
+    response_data = {}
+    response_data['error'] = error 
+    response_data['mensaje'] = msg
+    response_data['ajustes'] = ajustes
     
     return HttpResponse(json.dumps(response_data), content_type="application/json")

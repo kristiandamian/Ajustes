@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block content %}
+    {% load staticfiles %}    
+<link href="{% static "css/dark-hive/jquery-ui-1.10.4.custom.min.css" %}" rel="stylesheet">
+<h1>{{ Titulo }}</h1>
+    <div>
+        <form  method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <label for="fechaInicial">Fecha Inicial</label>
+                        <input type="text" name="fechaInicial" class="form-control datepicker obligatorio" id="fechaInicial"
+                               placeholder="dd/mm/yyyy" maxlength="10" value="{{FechaInicial|date:"SHORT_DATE_FORMAT"}}" />
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="fechaFinal">Fecha Final</label>
+                        <input type="text" name="fechaFinal" class="form-control datepicker obligatorio" id="fechaFinal"
+                               placeholder="dd/mm/yyyy" maxlength="10" value="{{FechaFinal|date:"SHORT_DATE_FORMAT"}}" />
+                    </div>
+                </div>
+                <input id="btnBuscar" type="submit" value="Buscar" class="btn btn-primary" style="margin-top:15px;margin-bottom: 15px;"/>
+            </div>
+        </form>        
+    </div>
+
+<table class="table table-striped table-hover" id="TotalUnidades">
+    <tr class="success" style="text-align: center">
+        <td rowspan="2">Clasificaci&oacute;n</td>
+        {%if Zonas%}
+            {% for t in Zonas%}
+                <td colspan="2"><a href="{{URL}}{{t.id}}">{{t.NombreZona}}</a></td>
+            {% endfor %}
+        {%else%}
+            {% for t in Regiones%}
+                <td colspan="2">{{t.NombreRegion}}</td>
+            {% endfor %}
+        {%endif%}
+        <td colspan="2">Totales</td>
+    </tr>
+    <tr class="success">
+        {% for t in Zonas%}
+            <td>Num.</td>
+            <td>Monto</td>
+        {% endfor %}
+        {% for t in Regiones %}
+            <td>Num.</td>
+            <td>Monto</td>
+        {% endfor %}
+        <td>Tot. Num.</td>
+        <td>Tot. Monto</td>
+    </tr>
+{% for r in Datos %}       
+    <tr>
+        <td class="show-tooltip"><div data-toggle="tooltip" data-placement="right" title="{{r.descripcion}}">{{r.nombre}}</div>        
+        </td>
+        {% for d in r.detalles%}
+            <td>{{d.total}}</td>
+            <td class="moneda">{{d.monto}}</td>
+        {%endfor%}
+        <td><b>{{r.total}}</b></td>
+        <td class="moneda"><b>{{r.monto}}</b></td>    
+    </tr>
+{% endfor %}
+<tr>
+    <td><b>TOTALES</b></td>
+    {% for t in Totales%}
+        {% for key, value in t.items %}             
+            <td>{{value.0}}</td>
+            <td>{{value.1}}</td>
+        {% endfor %}
+    {% endfor %}
+    <td><b><i>{{granTotal}}</i></b></td>
+    <td class="moneda"><b><i>{{granTotalMonto}}</i></b></td>    
+</tr>
+</table>
+<script src="{% static "js/Utilerias.js" %}"></script>   
+<script type="text/javascript" src="{% static "js/jquery-ui-1.10.4.custom.min.js" %}"></script>
+<script type="text/javascript" src="{% static "js/datepickerUtil.js" %}"></script>
+
+<script type="text/javascript">
+ $(function(){
+        $("li").removeClass("active");
+        $("#Reportes").addClass("active");
+        dtpConfig();
+        {%if Error%}
+                alert("{{MensajeError}}");
+        {%endif%}
+        
+        $(".show-tooltip div").tooltip();
+    });
+</script>
+{% endblock %}

@@ -13,10 +13,8 @@ import json
 def RegistroAutorizacion(request):
     ajustes=json.loads(request.body)["ids"]
     error=False
-    msg=""
-    
-    correos=ValidoCorreos(ajustes)
-    
+    msg=""    
+    correos=ValidoCorreos(ajustes)    
     if not correos[0]:
         error=True
         msg=" ".join(["Las siguientes regiones no tienen el correo correctamente configurado:",str(correos[1]).strip('[]')])

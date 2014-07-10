@@ -170,8 +170,7 @@
         {% endif %}
     });
     
-    BuscoAjusteEspecifico =function()
-    {
+    BuscoAjusteEspecifico =function() {
         var ajuste={
                     "id":{{id}}
                 }
@@ -208,12 +207,8 @@
         
     }
     BuscoAjustes= function(){        
-        var ajuste={
-                    "tienda":$("#txtTienda").val(),
-                    "numcte":$("#txtNumCte").val(),
-                    "centro":$("#cmbCentro :selected").val(),
-                    "fechaInicial":$("#txtFechaInicial").val(),
-                    "fechaFinal":$("#txtFechaFinal").val()
+        var ajuste={                    
+                    "numcte":$("#txtNumCte").val(),                    
                 }
         var Datos={
             "Ajustes":ajuste

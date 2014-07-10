@@ -50,8 +50,19 @@
                 </table>
                 <div id="FormaCaptura" style="display: none">
                     <div class="row">
-                        <div class="col-sm-2">                    
+                        <div class="col-sm-2">
                             <input type="checkbox" style="margin-right:3px;" id="ProcedeAjuste"><label>Procede ajuste</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input type="checkbox" style="margin-right:3px;" id="EsFraude"><label>Es Fraude</label>
+                        </div>
+                        <div class="col-sm-2">                            
+                            <select  class="form-control" id="EstatusFraude">
+                                    <option value="0">--------</option>
+                                    {%for e in TipoFraude%}
+                                        <option value="{{e.0}}">{{e.1}}</option>
+                                    {%endfor%}
+                            </select>
                         </div>
                     </div>
                     <div class="row">
@@ -212,10 +223,15 @@
     ///////GRABAR DATOS   ///////|||)
     /////////////////////////////|||)    
     GrabarCierre=function(){        
-        if (DatosCompletos("obligatorioGrabar")) //&& DatosValidos())
+        if (DatosCompletos("obligatorioGrabar"))
         {
-            jsonData=ObjetoJson();
-            Grabar(jsonData);
+            if (DatosValidos()) {
+                jsonData=ObjetoJson();
+                Grabar(jsonData);
+            }
+            else{
+                alert("Se debe seleccionar un tipo de fraude");   
+            }            
         }        
     };
     Grabar=function(Datos){
@@ -252,6 +268,8 @@
         ajuste.clasificacion=$("#ClasificacionAjuste").val();
         ajuste.estatus=$("#EstatusAjuste").val();
         ajuste.observacion=$("#txtObservaciones").val();
+        ajuste.esfraude=$("#EsFraude").is(":checked");
+        ajuste.tipofraude=$("#EstatusFraude").val();
         ajuste.empleados=[]
         $("#ajusteClasificados tr:gt(0)").each(function(){
             empleado={};
@@ -265,18 +283,16 @@
     /////////////////////////////|||)
     /////// VALIDACIONES  ///////|||)
     /////////////////////////////|||)
-    //DatosValidos=function(){
-    //    var valido=false;
-    //    if($("#ProcedeAjuste").is(":checked"))
-    //    {
-    //        valido=$("#ajusteClasificados tr").length>1;
-    //    }
-    //    else
-    //    {
-    //        valido=true;
-    //    }
-    //    return valido;
-    //}
+    DatosValidos=function(){
+        var valido=false;
+        if($("#EsFraude").is(":checked")){
+            valido=$("#EstatusFraude").val()>0;
+        }
+        else{
+            valido=true;
+        }
+        return valido;
+    }
     /////////////////////////////|||)
     ///////MANEJO DE TABLA///////|||)
     /////////////////////////////|||)    

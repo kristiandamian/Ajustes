@@ -122,7 +122,7 @@ def AjustePorMontoZona(request):
 @login_required(login_url=Configuracion.LOGIN_URL)
 def AjustePorMontoRegion(request,zona_id):
     template = loader.get_template(URI_TEMPLATE)
-    regiones=RegionAuditoria.objects.filter(Zona__id=zona_id).order_by("NombreRegion")
+    regiones=RegionAuditoria.objects.PorPermiso(request.user).filter(Zona__id=zona_id).order_by("NombreRegion")
     Titulos=["Registrados","Activos","Sin autorizar","Enviados","Cancelados","Procede ajuste","No Procede ajuste"]
     datos=[]
     totales=[]

@@ -64,6 +64,40 @@
     <input id="btnGrabar" type="submit" value="Grabar" class="btn btn-default"/>
     </form>
     
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">        
+        <h4 class="modal-title" id="myModalLabel">Ajustes del mismo cliente</h4>
+      </div>
+      <div class="modal-body">
+            <table id="tablaAjustesModal" class="table table-striped table-hover" >
+                <thead>
+                <tr  class="success header">
+                    <td style="display: none">id</td>
+                    <td>NumCte</td>
+                    <td>Tienda</td>
+                    <td>Fecha Recepcion</td>
+                    <td>NumEmpleado</td>
+                    <td>NumCuentas</td>
+                    <td>Monto</td>                    
+                </tr>
+                </thead>
+                <tr>                    
+                </tr>
+            </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" id="RegistrarAjuste">Seguir con registro</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal" id="CancelarAjuste">Cancelar regstro</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- FIN Modal -->    
+    
     <script type="text/javascript" src="{% static "js/jquery-ui-1.10.4.custom.min.js" %}"></script>
     <script type="text/javascript" src="{% static "js/datepickerUtil.js" %}"></script>
     <script src="{% static "js/json2.min.js" %}"></script>
@@ -72,8 +106,7 @@
     <script type="text/javascript">
         $(function() {
             $("li").removeClass("active");
-            $("#Ajustes").addClass("active");
-                
+            $("#Ajustes").addClass("active");            
             dtpConfig();
             $("#AgregarTabla").on("click",function(){
                 if (DatosCompletos("obligatorio")) {
@@ -86,20 +119,29 @@
                         alert("Debe capturar un monto mayor a cero");
                         $("#id_MontoAjuste").focus();
                     }
-                }                
+                }
             });
             $('#PostAjustes').submit(function() {
                 var correctoTodo=false;
                 if (HayDatosTabla()) {
-                    JsonizarTabla()
-                    correctoTodo=true;
+                    BuscaAjustesMismoCte();
+                    JsonizarTabla()                                     
+                    correctoTodo=true;                                        
                 }
-                else                
-                {
+                else {
                     alert("Debe capturar al menos una factura al ajuste");
                     $("#id_Factura").focus();
                 }
                 return correctoTodo;
+            });
+            $('#CancelarAjuste').on('click',function(){
+                $('#btnGrabar').attr("disabled","disabled");
+            });
+            $('#RegistrarAjuste').on('click',function(){
+                $('#btnGrabar').removeAttr("disabled");
+            });
+            $("#id_NumCte").on('focusout',function(){                
+                BuscaAjustesMismoCte();
             });
         });
         JsonizarTabla=function(){
@@ -148,5 +190,66 @@
         {
             $(td).closest("tr").remove();            
         };
+        //################################################
+        //####### BUSQUEDA DE OTROS AJUSTES DEL CTE  #####
+        //################################################
+        BuscaAjustesMismoCte=function(){            
+            var ajuste={
+                    "numcte":$("#id_NumCte").val()
+                }
+            var Datos={
+                "Ajustes":ajuste
+            };
+            /////////////////////////////|||)
+            ///////ENVIO DATA AJAX///////|||)
+            /////////////////////////////|||)
+            var ajax = {
+                    type: "POST",
+                    async: true,
+                    dataType: "JSON",
+                    url: "/ajustes/ajax/BuscarAjustePorCte/",
+                    data: JSON.stringify(Datos),
+                    error: function (xhr, status, error) {
+                        alert("Ocurrio un error: " + error + ":" + eval(xhr).responseText);
+                    },
+                    success: function (data) {                    
+                        d=eval(data);
+                        $("#tablaAjustesModal tr:gt(0)").remove();
+                        if (d.error) {                        
+                            alert(d.mensaje);                            
+                        }
+                        else{                            
+                            $("#tablaAjustesModal tr:gt(0)").remove();                            
+                            AgregoAjuste(d,"tablaAjustesModal");
+                            if ($("#tablaAjustesModal").find("tr").length>1) {
+                                $('#myModal').modal('show');
+                            }                            
+                        }
+                    }
+                };
+            $.ajax(ajax);            
+        };        
+        
+        AgregoAjuste=function (d,tablaID){            
+                        ajustes=eval(d.ajustes);
+                        $.each(ajustes, function(index, value) {
+                            var tabla="<tr><td style='display: none'>"+
+                                value.pk
+                                +"</td><td>"+
+                                value.fields.NumCte
+                                +"</td><td>"+
+                                value.fields.Tienda
+                                +"</td><td>"+
+                                value.fields.FechaRecepcion
+                                +"</td><td>"+
+                                value.fields.NumEmpleado
+                                +"</td><td>"+
+                                value.fields.NumCuentas
+                                +"</td><td>"+
+                                value.fields.Monto
+                                +"</td></tr>";
+                            $("#"+tablaID).append(tabla);                            
+                        });
+                }
     </script>
 {% endblock %}
