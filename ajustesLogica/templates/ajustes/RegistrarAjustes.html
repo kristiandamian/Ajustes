@@ -113,8 +113,7 @@
                     if (parseFloat($("#id_MontoAjuste").val())>0) {
                         AgregoRenglon();   
                     }
-                    else
-                    {                        
+                    else {                        
                         $("#id_MontoAjuste").closest('div').addClass("has-error")
                         alert("Debe capturar un monto mayor a cero");
                         $("#id_MontoAjuste").focus();
@@ -123,8 +122,7 @@
             });
             $('#PostAjustes').submit(function() {
                 var correctoTodo=false;
-                if (HayDatosTabla()) {
-                    BuscaAjustesMismoCte();
+                if (HayDatosTabla()) {                    
                     JsonizarTabla()                                     
                     correctoTodo=true;                                        
                 }
@@ -157,11 +155,10 @@
                 datos.datos.push(dato);                
             });
             $("#jsonTable").val(JSON.stringify(datos));
-        }
-        HayDatosTabla=function()
-        {            
+        };
+        HayDatosTabla=function(){            
             return $("#ajusteClasificados tr").length>1;
-        }
+        };
         
         AgregoRenglon=function(){            
             var row="<tr>";
@@ -177,8 +174,7 @@
             $("#ajusteClasificados").append(row);
             $("#tablaAjustes :input").val("");
         };
-        EditoRenglon=function(td)
-        {
+        EditoRenglon=function(td){
             $("#id_Factura").val($(td).closest("tr").find("td:eq(1)").text());
             $("#id_TiendaAjuste").val($(td).closest("tr").find("td:eq(3)").text());
             $("#id_Fecha").val($(td).closest("tr").find("td:eq(4)").text());
@@ -186,8 +182,7 @@
             $("#id_Tipo option[value="+$(td).closest("tr").find("td:eq(0)").text()+"]").attr('selected','selected');
             EliminoRenglon(td);
         };
-        EliminoRenglon=function(td)
-        {
+        EliminoRenglon=function(td){
             $(td).closest("tr").remove();            
         };
         //################################################
@@ -250,6 +245,6 @@
                                 +"</td></tr>";
                             $("#"+tablaID).append(tabla);                            
                         });
-                }
+                };
     </script>
 {% endblock %}

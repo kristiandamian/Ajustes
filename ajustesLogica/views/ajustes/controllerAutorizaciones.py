@@ -22,13 +22,11 @@ def RenderAjuste(request, template):
     if userPermiso.__len__()<=0 or (userPermiso[0].Region==None and userPermiso[0].Zona==None):
         error=True
         msg="El usuario no tiene una region o zona asignada"
-    else:
-        #userPermiso=userPermiso[0]
+    else:        
         regiones=[]
         if userPermiso[0].Region!=None:
             regiones=userPermiso.values_list("Region__id",flat=True)
-        else:
-            #zonas=UsuarioAcceso.objects.filter(Zona=userPermiso.Zona).values_list("Zona__id",flat=True)            
+        else:            
             regiones=RegionAuditoria.objects.filter(Zona__id__in=userPermiso.values_list("Zona__id",flat=True)).values_list("id",flat=True)
         ajustes=Ajuste.objects.filter(Q(Region__id__in=regiones)|Q(RegionRegistra__id__in=regiones), Enviado=False, Activo=True)
 
