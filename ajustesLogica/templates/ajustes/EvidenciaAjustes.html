@@ -208,7 +208,11 @@
     }
     BuscoAjustes= function(){        
         var ajuste={                    
-                    "numcte":$("#txtNumCte").val(),                    
+                    "tienda":$("#txtTienda").val(),
+                    "numcte":$("#txtNumCte").val(),
+                    "centro":$("#cmbCentro :selected").val(),
+                    "fechaInicial":$("#txtFechaInicial").val(),
+                    "fechaFinal":$("#txtFechaFinal").val()              
                 }
         var Datos={
             "Ajustes":ajuste
