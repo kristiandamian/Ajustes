@@ -38,7 +38,6 @@ def AjustePorClasificacionZona(request):
             if index<0:
                 totales.append({z.id:[0,0.0]})
             cierres=CierreAjuste.objects.filter(Clasificacion=c,AjusteAfectado__Region__Zona=z,  AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal, AjusteAfectado__Activo=True)
-            #for cierre in cierres:
             total=cierres.values('AjusteAfectado__Region__Zona') \
                       .annotate(total = Count('AjusteAfectado__Tienda'))
             monto=cierres.values('AjusteAfectado__Region__Zona') \
@@ -115,7 +114,6 @@ def AjustePorClasificacionRegion(request, zona_id):
             if index<0:
                 totales.append({z.id:[0,0.0]})
             cierres=CierreAjuste.objects.filter(Clasificacion=c,AjusteAfectado__Region=z,  AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal, AjusteAfectado__Activo=True)
-            #for cierre in cierres:
             total=cierres.values('AjusteAfectado__Region__Zona') \
                       .annotate(total = Count('AjusteAfectado__Tienda'))
             monto=cierres.values('AjusteAfectado__Region__Zona') \

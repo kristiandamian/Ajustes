@@ -40,7 +40,6 @@ def AjustePorFraudeZona(request):
             if index<0:
                 totales.append({z.id:[0,0.0]})
             cierres=CierreAjuste.objects.filter(TipoFraude=c[0],AjusteAfectado__Region__Zona=z,  AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal, AjusteAfectado__Activo=True)
-            #for cierre in cierres:
             total=cierres.values('AjusteAfectado__Region__Zona') \
                       .annotate(total = Count('AjusteAfectado__Tienda'))
             monto=cierres.values('AjusteAfectado__Region__Zona') \
@@ -106,8 +105,7 @@ def AjustePorFraudeRegion(request, zona_id):
         error=datosValidacion[0]
         msg=datosValidacion[1]
         fechainicial=datosValidacion[2]
-        fechafinal=datosValidacion[3]
-    
+        fechafinal=datosValidacion[3]    
     for c in clasificaciones:        
         totalClasificacion=0
         montoClasificacion=0        
@@ -117,7 +115,6 @@ def AjustePorFraudeRegion(request, zona_id):
             if index<0:
                 totales.append({z.id:[0,0.0]})
             cierres=CierreAjuste.objects.filter(TipoFraude=c[0],AjusteAfectado__Region=z,  AjusteAfectado__FechaRecepcion__gte=fechainicial, AjusteAfectado__FechaRecepcion__lte=fechafinal, AjusteAfectado__Activo=True)
-            #for cierre in cierres:
             total=cierres.values('AjusteAfectado__Region__Zona') \
                       .annotate(total = Count('AjusteAfectado__Tienda'))
             monto=cierres.values('AjusteAfectado__Region__Zona') \

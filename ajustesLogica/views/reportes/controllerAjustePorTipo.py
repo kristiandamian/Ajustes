@@ -179,10 +179,6 @@ def AjustePorTipoRegion(request,zona_id):
         
         totalAct+=ajustes[0]["total"]
         
-                
-
-        
-        
         ajustes=ValidoAjustes(Ajuste.objects.filter(Region=z,Enviado=False, FechaRecepcion__gte=fechainicial, FechaRecepcion__lte=fechafinal)\
                       .values('Region') \
                       .annotate(total = Count('Tienda')))        

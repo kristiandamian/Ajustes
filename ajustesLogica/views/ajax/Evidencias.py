@@ -12,9 +12,6 @@ import json
 @csrf_exempt
 def BuscarAjustes(request):
     ajuste=json.loads(request.body)["Ajustes"]
-    print "------------------------------------"
-    print ajuste
-    print "------------------------------------"
     tienda=int(ajuste['tienda'])
     numcte=ajuste['numcte']
     error=False

@@ -56,7 +56,6 @@ URI_WINDOWS_CODE='C:/CodigoDjango'
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
 MEDIA_ROOT = URI_WINDOWS_CODE+'/ajustes/ajustesLogica/media'
-#MEDIA_ROOT = 'C:/wamp/www/ajustes/ajustesLogica/media'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a trailing slash.
 # Examples: "http://example.com/media/", "http://media.example.com/"
@@ -80,8 +79,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    URI_WINDOWS_CODE+'/ajustes/ajustesLogica/static',
-    #'C:/wamp/www/ajustes/ajustesLogica/static',
+    URI_WINDOWS_CODE+'/ajustes/ajustesLogica/static',    
 )
 
 # List of finder classes that know how to find static files in
@@ -119,8 +117,7 @@ ROOT_URLCONF = 'ajustes.urls'
 WSGI_APPLICATION = 'ajustes.wsgi.application'
 
 TEMPLATE_DIRS = (
-    URI_WINDOWS_CODE+"/ajustes/ajustesLogica/templates"
-    #"C:/wamp/www/ajustes/ajustesLogica/templates"
+    URI_WINDOWS_CODE+"/ajustes/ajustesLogica/templates"    
 )
 
 INSTALLED_APPS = (

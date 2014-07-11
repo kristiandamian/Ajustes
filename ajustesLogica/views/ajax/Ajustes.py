@@ -71,8 +71,7 @@ def BuscarNotasAjuste(request):
             empleados=None
     else:
         datosCierre=None
-    
-    
+        
     response_data = {}
     response_data['error'] = False 
     response_data['mensaje'] = ""
