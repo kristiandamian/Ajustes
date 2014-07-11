@@ -45,71 +45,72 @@ admin.site.register(UsuarioAcceso,UsuarioAccesoAdmin)                           
 admin.site.register(ZonaAuditoria)                                                                      ####
 admin.site.register(RegionAuditoria)                                                                    ####
 admin.site.register(ClasificacionAjuste)                                                                ####
+patronURI='ajustes/'
 ############################################################################################################
 urlpatterns = patterns('',                                                                              ####
 ############################################################################################################
 #### SESSION                                                                                           #####
 ############################################################################################################
-    url(r'^ajustes/login/',loginUsuario),                                                               ####
-    url(r'^ajustes/logout/',logoutUsuario),                                                             ####
+    url(r'^'+patronURI+'login/',loginUsuario),                                                          ####
+    url(r'^'+patronURI+'logout/',logoutUsuario),                                                        ####
 ############################################################################################################
 #### AJUSTES DE CLIENTES                                                                                ####
 ############################################################################################################
-    url(r'^ajustes/$',AjustePorTipoZona),                                                               ####
-    url(r'^ajustes/AltaAjuste/$',AltaAjuste),                                                           ####
-    url(r'^ajustes/Ajuste/$',VerAjustes),                                                               ####
-    url(r'^ajustes/Ajuste/(?P<ajuste>\d+)/$',VerAjuste),                                                ####
-    url(r'^ajustes/RegistrarAjuste/$',RegistrarAjuste),                                                 ####
-    url(r'^ajustes/EvidenciaAjustes/$',AltaEvidencia),                                                  ####
-    url(r'^ajustes/EvidenciaAjustes/(?P<ajuste>\d+)/',AltaEvidenciaAjuste),                             ####
-    url(r'^ajustes/AutorizarAjustes/$',AutorizarAjustes),                                               ####
-    url(r'^ajustes/FinalizarAjuste/$',FinalizarAjuste),                                                 ####
+    url(r'^'+patronURI+'$',AjustePorTipoZona),                                                          ####
+    url(r'^'+patronURI+'AltaAjuste/$',AltaAjuste),                                                      ####
+    url(r'^'+patronURI+'Ajuste/$',VerAjustes),                                                          ####
+    url(r'^'+patronURI+'Ajuste/(?P<ajuste>\d+)/$',VerAjuste),                                           ####
+    url(r'^'+patronURI+'RegistrarAjuste/$',RegistrarAjuste),                                            ####
+    url(r'^'+patronURI+'EvidenciaAjustes/$',AltaEvidencia),                                             ####
+    url(r'^'+patronURI+'EvidenciaAjustes/(?P<ajuste>\d+)/',AltaEvidenciaAjuste),                        ####
+    url(r'^'+patronURI+'AutorizarAjustes/$',AutorizarAjustes),                                          ####
+    url(r'^'+patronURI+'FinalizarAjuste/$',FinalizarAjuste),                                            ####
 ############################################################################################################
 #### MANEJO DE S.A. ENVIADAS                                                                            ####
 ############################################################################################################
-    url(r'^ajustes/SeguimientoSA/$',SeguimientoSA),                                                     ####
+    url(r'^'+patronURI+'SeguimientoSA/$',SeguimientoSA),                                                ####
 ############################################################################################################
 #### AJAX                                                                                               ####
 ############################################################################################################
-    url(r'^ajustes/ajax/BuscarAjustes/$',BuscarAjustes),                                                ####
-    url(r'^ajustes/ajax/BuscarAjuste/$',BuscarAjuste),                                                  ####
-    url(r'^ajustes/ajax/BuscarTodosLosAjustes/$',BuscarTodosLosAjustes),                                ####
-    url(r'^ajustes/ajax/BuscarDatosAjuste/$',BuscarNotasAjuste),                                        ####
-    url(r'^ajustes/ajax/RegistroAutorizacion/$',RegistroAutorizacion),                                  ####
-    url(r'^ajustes/ajax/upload/$',upload),                                                              ####
-    url(r'^ajustes/ajax/BuscarEvidencias/$',BuscarEvidencias),                                          ####
-    url(r'^ajustes/ajax/BuscarCorreo/$',BuscarCorreo),                                                  ####
-    url(r'^ajustes/ajax/GrabarCorreo/$',GrabarCorreo),                                                  ####
-    url(r'^ajustes/ajax/CanceloAjuste/$',CanceloAjuste),                                                ####
-    url(r'^ajustes/ajax/FinalizarAjuste/$',FinalizacionAjuste),                                         ####
-    url(r'^ajustes/ajax/BuscarSAs/$',BuscarSAs),                                                        ####
-    url(r'^ajustes/ajax/GrabarSA/$',GrabarSAs),                                                         ####
-    url(r'^ajustes/ajax/BuscarAjustePorCte/$',BuscarAjustePorCte),                                      ####
+    url(r'^'+patronURI+'ajax/BuscarAjustes/$',BuscarAjustes),                                           ####
+    url(r'^'+patronURI+'ajax/BuscarAjuste/$',BuscarAjuste),                                             ####
+    url(r'^'+patronURI+'ajax/BuscarTodosLosAjustes/$',BuscarTodosLosAjustes),                           ####
+    url(r'^'+patronURI+'ajax/BuscarDatosAjuste/$',BuscarNotasAjuste),                                   ####
+    url(r'^'+patronURI+'ajax/RegistroAutorizacion/$',RegistroAutorizacion),                             ####
+    url(r'^'+patronURI+'ajax/upload/$',upload),                                                         ####
+    url(r'^'+patronURI+'ajax/BuscarEvidencias/$',BuscarEvidencias),                                     ####
+    url(r'^'+patronURI+'ajax/BuscarCorreo/$',BuscarCorreo),                                             ####
+    url(r'^'+patronURI+'ajax/GrabarCorreo/$',GrabarCorreo),                                             ####
+    url(r'^'+patronURI+'ajax/CanceloAjuste/$',CanceloAjuste),                                           ####
+    url(r'^'+patronURI+'ajax/FinalizarAjuste/$',FinalizacionAjuste),                                    ####
+    url(r'^'+patronURI+'ajax/BuscarSAs/$',BuscarSAs),                                                   ####
+    url(r'^'+patronURI+'ajax/GrabarSA/$',GrabarSAs),                                                    ####
+    url(r'^'+patronURI+'ajax/BuscarAjustePorCte/$',BuscarAjustePorCte),                                 ####
 ############################################################################################################
 ####    SOPORTE                                                                                         ####
 ############################################################################################################
-    url(r'^ajustes/ConfiguracionCorreo/$',ConfiguracionCorreo),                                         ####
-    url(r'^ajustes/CancelarAjustes/$',CancelarAjuste),                                                  ####
+    url(r'^'+patronURI+'ConfiguracionCorreo/$',ConfiguracionCorreo),                                    ####
+    url(r'^'+patronURI+'CancelarAjustes/$',CancelarAjuste),                                             ####
 ############################################################################################################
 ####    REPORTES                                                                                        ####
 ############################################################################################################
-    url(r'^ajustes/GraficaTendenciasAjustes/$',TendenciasAjustes),                                      ####
-    url(r'^ajustes/AjustesPorFecha/$',AjustesPorFecha),                                                 ####
-    url(r'^ajustes/AjustesSinEvidencia/$',AjusteSinEvidencia),                                          ####
-    url(r'^ajustes/AjustePorTipoZona/$',AjustePorTipoZona),                                             ####
-    url(r'^ajustes/AjustePorTipoRegion/(?P<zona_id>\d+)/$',AjustePorTipoRegion),                        ####
-    url(r'^ajustes/AjustePorMontoZona/$',AjustePorMontoZona),                                           ####
-    url(r'^ajustes/AjustePorMontoRegion/(?P<zona_id>\d+)/$',AjustePorMontoRegion),                      ####
-    url(r'^ajustes/AjustePorClasificacionZona/$',AjustePorClasificacionZona),                           ####
-    url(r'^ajustes/AjustePorClasificacionRegion/(?P<zona_id>\d+)/$',AjustePorClasificacionRegion),      ####
-    url(r'^ajustes/DistribucionClasificacion/$',DistribucionClasificacion),                             ####
-    url(r'^ajustes/DistribucionEstatus/$',DistribucionEstatus),                                         ####
-    url(r'^ajustes/DistribucionCentro/$',DistribucionCentro),                                           ####
-    url(r'^ajustes/AjustesCancelados/$',AjustesCancelados),                                             ####
-    url(r'^ajustes/DistribucionTienda/$',DistribucionTienda),                                           ####
-    url(r'^ajustes/AjustePorFraude/$',AjustePorFraudeZona),                                             ####
-    url(r'^ajustes/AjustePorFraudeRegion/(?P<zona_id>\d+)/$',AjustePorFraudeRegion),                    ####
-    url(r'^ajustes/AjustesSinFinalizar/$',AjustesSinFinalizar),                                         ####
+    url(r'^'+patronURI+'GraficaTendenciasAjustes/$',TendenciasAjustes),                                 ####
+    url(r'^'+patronURI+'AjustesPorFecha/$',AjustesPorFecha),                                            ####
+    url(r'^'+patronURI+'AjustesSinEvidencia/$',AjusteSinEvidencia),                                     ####
+    url(r'^'+patronURI+'AjustePorTipoZona/$',AjustePorTipoZona),                                        ####
+    url(r'^'+patronURI+'AjustePorTipoRegion/(?P<zona_id>\d+)/$',AjustePorTipoRegion),                   ####
+    url(r'^'+patronURI+'AjustePorMontoZona/$',AjustePorMontoZona),                                      ####
+    url(r'^'+patronURI+'AjustePorMontoRegion/(?P<zona_id>\d+)/$',AjustePorMontoRegion),                 ####
+    url(r'^'+patronURI+'AjustePorClasificacionZona/$',AjustePorClasificacionZona),                      ####
+    url(r'^'+patronURI+'AjustePorClasificacionRegion/(?P<zona_id>\d+)/$',AjustePorClasificacionRegion), ####
+    url(r'^'+patronURI+'DistribucionClasificacion/$',DistribucionClasificacion),                        ####
+    url(r'^'+patronURI+'DistribucionEstatus/$',DistribucionEstatus),                                    ####
+    url(r'^'+patronURI+'DistribucionCentro/$',DistribucionCentro),                                      ####
+    url(r'^'+patronURI+'AjustesCancelados/$',AjustesCancelados),                                        ####
+    url(r'^'+patronURI+'DistribucionTienda/$',DistribucionTienda),                                      ####
+    url(r'^'+patronURI+'AjustePorFraude/$',AjustePorFraudeZona),                                        ####
+    url(r'^'+patronURI+'AjustePorFraudeRegion/(?P<zona_id>\d+)/$',AjustePorFraudeRegion),               ####
+    url(r'^'+patronURI+'AjustesSinFinalizar/$',AjustesSinFinalizar),                                    ####
 ############################################################################################################
 ####  LIGA PARA LOS ARCHIVOS SUBIDOS (EVIDENCIAS)                                                       ####
 ############################################################################################################
@@ -117,6 +118,6 @@ urlpatterns = patterns('',                                                      
 ############################################################################################################
 ####                             ADMIN                                                                  ####
 ############################################################################################################
-    url(r'^ajustes/admin/', include(admin.site.urls)),                                                  ####
+    url(r'^'+patronURI+'admin/', include(admin.site.urls)),                                             ####
 )                                                                                                       ####
 ############################################################################################################

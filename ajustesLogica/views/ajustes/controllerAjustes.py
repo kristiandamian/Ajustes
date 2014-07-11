@@ -49,7 +49,7 @@ def RegistrarAjuste(request):
 def EnvioCorreoOtraRegion(ajuste):
     usuario=""
     password=""
-    titulo="Ajuste de auditoria"
+    titulo="Ajuste de auditoria desde otra region: "+ajuste.RegionRegistra.NombreRegion
     mensaje="""
                 Buen dia.
                 
